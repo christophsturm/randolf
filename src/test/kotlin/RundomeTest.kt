@@ -2,6 +2,7 @@ import RundomeTest.A
 import RundomeTest.B
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.junit.context
+import kotlin.reflect.KClass
 
 // this is just the first test from the minutest readme converted to strikt, to check that both work
 class RundomeTest : JUnit5Minutests {
@@ -29,12 +30,15 @@ class RundomeTest : JUnit5Minutests {
 }
 
 object Rundome {
-    @Suppress("IMPLICIT_CAST_TO_ANY")
-    inline fun <reified T> create(): T = when (T::class) {
-        A::class -> A(1, 2, B("blah"))
-        B::class -> B("blah")
-        else -> throw RuntimeException()
-    } as T
+    inline fun <reified T> create(): T = create(T::class) as T
+
+    fun create(kClass: KClass<*>): Any {
+        return when (kClass) {
+            A::class -> A(1, 2, B("blah"))
+            B::class -> B("blah")
+            else -> throw RuntimeException()
+        }
+    }
 
 }
 

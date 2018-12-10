@@ -21,6 +21,7 @@ repositories {
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
+    compile(kotlin("reflect"))
     testImplementation("io.strikt:strikt-core:0.17.1")
     testImplementation("com.oneeyedmen:minutest:0.32.0")
 
