@@ -1,3 +1,4 @@
+import RundomeTest.A
 import RundomeTest.B
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.junit.context
@@ -21,14 +22,19 @@ class RundomeTest : JUnit5Minutests {
             // no idea what i could assert on the object
         }
 
-
+        derivedContext<A>("different type") {
+            deriveFixture { Rundome.create() }
+        }
     }
 }
 
 object Rundome {
-    fun create(): B {
-//        return A(1, 2, B("blah"))
-        return B("blah")
-    }
+    @Suppress("IMPLICIT_CAST_TO_ANY")
+    inline fun <reified T> create(): T = when (T::class) {
+        A::class -> A(1, 2, B("blah"))
+        B::class -> B("blah")
+        else -> throw RuntimeException()
+    } as T
 
 }
+
