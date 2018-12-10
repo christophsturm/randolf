@@ -1,5 +1,7 @@
 import RundomeTest.A
 import RundomeTest.B
+import com.oneeyedmen.minutest.experimental.SKIP
+import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.junit.context
 import kotlin.reflect.KClass
@@ -7,9 +9,10 @@ import kotlin.reflect.KClass
 class RundomeTest : JUnit5Minutests {
     data class A(val a: Int, val b: Int, val c: B)
     data class B(val a: String)
+    data class C(val a: String)
 
 
-    override val tests = context<B> {
+    override val tests = context<B>(transform = skipAndFocus) {
         fixture {
             Rundome.create()
         }
@@ -20,6 +23,11 @@ class RundomeTest : JUnit5Minutests {
 
         derivedContext<A>("different type") {
             deriveFixture { Rundome.create() }
+            test("works") {}
+        }
+        SKIP - derivedContext<C>("another type, currently unsupported") {
+            deriveFixture { Rundome.create() }
+            test("works") {}
         }
     }
 }
