@@ -1,4 +1,3 @@
-import RundomeTest.A
 import RundomeTest.B
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.junit.context
@@ -10,7 +9,7 @@ class RundomeTest : JUnit5Minutests {
 
 
     // The fixture type is the generic type of the test, here Stack<String>
-    override val tests = context<A> {
+    override val tests = context<B> {
 
         // The fixture block tells Minutest how to create an instance of the fixture.
         // Minutest will call it once for every test.
@@ -21,12 +20,15 @@ class RundomeTest : JUnit5Minutests {
         test("fixture works") {
             // no idea what i could assert on the object
         }
+
+
     }
 }
 
 object Rundome {
-    fun create(): A {
-        return A(1, 2, B("blah"))
+    fun create(): B {
+//        return A(1, 2, B("blah"))
+        return B("blah")
     }
 
 }
