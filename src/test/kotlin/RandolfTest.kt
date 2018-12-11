@@ -16,12 +16,9 @@ class RandolfTest : JUnit5Minutests {
 
     override val tests = rootContext<Unit>(transform = skipAndFocus) {
         test("sets string properties to 20 random characters") {
-            repeat(100) {
-                val firstInstance = Randolf.create<StringDC>()
-                expectThat(firstInstance).get { stringProperty }.hasLength(20)
-                println(firstInstance)
-                expectThat(firstInstance).isNotEqualTo(Randolf.create())
-            }
+            val firstInstance = Randolf.create<StringDC>()
+            expectThat(firstInstance).get { stringProperty }.hasLength(20)
+            expectThat(firstInstance).isNotEqualTo(Randolf.create())
         }
 
         test("sets Integer properties to a random value") {
