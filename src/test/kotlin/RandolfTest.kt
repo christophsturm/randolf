@@ -1,3 +1,4 @@
+import com.oneeyedmen.minutest.experimental.SKIP
 import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
@@ -42,6 +43,12 @@ class RandolfTest : JUnit5Minutests {
             data class NullableStringDC(val a: String?)
             expectThat(Randolf.create<NullableStringDC>(false)).get { a }.isNotNull()
         }
+        SKIP - test("sets lists of supported values") {
+            // this will be fun and require some refactoring.
+            data class ListDC(val listOfStrings: List<String>)
+            expectThat(Randolf.create<ListDC>()).isNotEqualTo(Randolf.create())
+        }
+
         test("detects dependency loops") {
             data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
             expectThrows<RandolfException> {
