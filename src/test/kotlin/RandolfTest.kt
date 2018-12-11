@@ -23,25 +23,25 @@ class RandolfTest : JUnit5Minutests {
             val firstInstance = Randolf.create<StringDC>()
             expectThat(firstInstance).get { stringProperty }.hasLength(20)
 
-            expectThat(Randolf.create<StringDC>()).isNotEqualTo(firstInstance)
+            expectThat(firstInstance).isNotEqualTo(Randolf.create())
         }
 
         test("sets Integer properties to a random value") {
             data class IntegerDC(val integerProperty: Int)
-            expectThat(Randolf.create<IntegerDC>()).isNotEqualTo(Randolf.create<IntegerDC>())
+            expectThat(Randolf.create<IntegerDC>()).isNotEqualTo(Randolf.create())
         }
         test("sets Long properties to a random value") {
             data class LongDC(val longProperty: Long)
-            expectThat(Randolf.create<LongDC>()).isNotEqualTo(Randolf.create<LongDC>())
+            expectThat(Randolf.create<LongDC>()).isNotEqualTo(Randolf.create())
         }
         test("sets Double properties to a random value") {
             data class DoubleDC(val doubleProperty: Double)
-            expectThat(Randolf.create<DoubleDC>()).isNotEqualTo(Randolf.create<DoubleDC>())
+            expectThat(Randolf.create<DoubleDC>()).isNotEqualTo(Randolf.create())
         }
 
         test("initializes nested data classes") {
             data class DataClassDC(val otherDataClassProperty: StringDC)
-            expectThat(Randolf.create<DataClassDC>()).isNotEqualTo(Randolf.create<DataClassDC>())
+            expectThat(Randolf.create<DataClassDC>()).isNotEqualTo(Randolf.create())
         }
         test("also sets nullable fields") {
             data class NullableStringDC(val a: String?)
