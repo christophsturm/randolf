@@ -1,4 +1,3 @@
-import java.util.concurrent.ThreadLocalRandom
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.javaType
@@ -27,9 +26,9 @@ class Randolf private constructor(private val minimal: Boolean) {
 
             if (minimal && type.isMarkedNullable) null else when (type) {
                 STRING -> if (minimal) "" else ('A'..'z').map { it }.shuffled().subList(0, 20).joinToString("")
-                INT -> ThreadLocalRandom.current().nextInt()
-                LONG -> ThreadLocalRandom.current().nextLong()
-                DOUBLE -> ThreadLocalRandom.current().nextDouble()
+                INT -> kotlin.random.Random.nextInt()
+                LONG -> kotlin.random.Random.nextLong()
+                DOUBLE -> kotlin.random.Random.nextDouble()
                 else -> create(Class.forName(type.javaType.typeName).kotlin, parameter.name!!)
             }
         }
