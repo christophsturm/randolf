@@ -32,6 +32,15 @@ class RundomeTest : JUnit5Minutests {
             data class IntegerDC(val integerProperty: Int)
             expectThat(Rundome.create<IntegerDC>()).isNotEqualTo(Rundome.create<IntegerDC>())
         }
+        test("sets Long properties to a random value") {
+            data class LongDC(val longProperty: Long)
+            expectThat(Rundome.create<LongDC>()).isNotEqualTo(Rundome.create<LongDC>())
+        }
+        test("sets Double properties to a random value") {
+            data class DoubleDC(val doubleProperty: Double)
+            expectThat(Rundome.create<DoubleDC>()).isNotEqualTo(Rundome.create<DoubleDC>())
+        }
+
         test("can create a data class with a nested data class") {
             data class IntFieldsAndNestedDataClassDC(val a: Int, val b: Int, val c: StringDC)
             Rundome.create<IntFieldsAndNestedDataClassDC>()
@@ -67,6 +76,8 @@ object Rundome {
                     20
                 ).joinToString("")
                 Int::class.createType() -> ThreadLocalRandom.current().nextInt()
+                Long::class.createType() -> ThreadLocalRandom.current().nextLong()
+                Double::class.createType() -> ThreadLocalRandom.current().nextDouble()
                 else -> create(Class.forName(type.javaType.typeName).kotlin)
             }
         }
