@@ -7,9 +7,15 @@ class Randolf private constructor(private val minimal: Boolean) {
     companion object {
         inline fun <reified T : Any> create(minimal: Boolean = false): T = create(T::class, minimal)
         fun <T : Any> create(kClass: KClass<T>, minimal: Boolean = false): T = Randolf(minimal).create(kClass, "<root>")
+
+        private val STRING = String::class.createType()
+        private val INT = Int::class.createType()
+        private val LONG = Long::class.createType()
+        private val DOUBLE = Double::class.createType()
     }
 
     private val path = mutableSetOf<KClass<*>>()
+
 
     fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
         if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName with type ${kClass.simpleName}")
@@ -20,12 +26,10 @@ class Randolf private constructor(private val minimal: Boolean) {
             val type = parameter.type
 
             if (minimal && type.isMarkedNullable) null else when (type) {
-                String::class.createType() -> if (minimal) "" else ('A'..'z').map { it }.shuffled().subList(
-                    0, 20
-                ).joinToString("")
-                Int::class.createType() -> ThreadLocalRandom.current().nextInt()
-                Long::class.createType() -> ThreadLocalRandom.current().nextLong()
-                Double::class.createType() -> ThreadLocalRandom.current().nextDouble()
+                STRING -> if (minimal) "" else ('A'..'z').map { it }.shuffled().subList(0, 20).joinToString("")
+                INT -> ThreadLocalRandom.current().nextInt()
+                LONG -> ThreadLocalRandom.current().nextLong()
+                DOUBLE -> ThreadLocalRandom.current().nextDouble()
                 else -> create(Class.forName(type.javaType.typeName).kotlin, parameter.name!!)
             }
         }
