@@ -1,7 +1,10 @@
+import com.oneeyedmen.minutest.experimental.SKIP
 import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
+import strikt.api.expectThrows
+import strikt.assertions.contains
 import strikt.assertions.hasLength
 import strikt.assertions.isEmpty
 import strikt.assertions.isNotEqualTo
@@ -45,6 +48,16 @@ class RandolfTest : JUnit5Minutests {
             data class NullableStringDC(val a: String?)
             expectThat(Randolf.create<NullableStringDC>(false)).get { a }.isNotNull()
         }
+        SKIP - test("detects dependency loops") {
+            data class DataClassThatContainsItelf(val recursiveField: DataClassThatContainsItelf)
+            expectThrows<RandolfException> {
+                Randolf.create<DataClassThatContainsItelf>()
+            }.get { message }.isNotNull().and {
+                contains("recursiveField")
+                contains(DataClassThatContainsItelf::class.java.name)
+            }
+
+        }
         context("minimal mode") {
 
             test("sets nullable properties to null") {
@@ -61,10 +74,14 @@ class RandolfTest : JUnit5Minutests {
     }
 }
 
-object Randolf {
-    inline fun <reified T> create(minimal: Boolean = false): T = create(T::class, minimal) as T
+class RandolfException : RuntimeException()
 
-    fun create(kClass: KClass<*>, minimal: Boolean = false): Any {
+class Randolf(private val minimal: Boolean) {
+    companion object {
+        inline fun <reified T> create(minimal: Boolean = false): T = Randolf(minimal).create(T::class) as T
+    }
+
+    fun create(kClass: KClass<*>): Any {
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
@@ -72,8 +89,7 @@ object Randolf {
 
             if (minimal && type.isMarkedNullable) null else when (type) {
                 String::class.createType() -> if (minimal) "" else ('A'..'z').map { it }.shuffled().subList(
-                    0,
-                    20
+                    0, 20
                 ).joinToString("")
                 Int::class.createType() -> ThreadLocalRandom.current().nextInt()
                 Long::class.createType() -> ThreadLocalRandom.current().nextLong()
