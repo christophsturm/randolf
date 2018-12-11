@@ -53,7 +53,7 @@ class RandolfTest : JUnit5Minutests {
                 contains("recursion ")
                 contains("detected ")
                 contains("recursiveField ")
-                contains(" ${DataClassThatReferencesItself::class.java.simpleName}")
+                contains(" DataClassThatReferencesItself")
             }
 
         }
