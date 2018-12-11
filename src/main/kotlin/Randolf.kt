@@ -9,10 +9,10 @@ class Randolf private constructor(private val minimal: Boolean) {
         fun <T : Any> create(kClass: KClass<T>, minimal: Boolean = false): T = Randolf(minimal).create(kClass, "<root>")
     }
 
-    val path = mutableListOf<KClass<*>>()
+    private val path = mutableSetOf<KClass<*>>()
 
     fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
-        if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName of type $kClass")
+        if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName with type ${kClass.simpleName}")
         path.add(kClass)
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters

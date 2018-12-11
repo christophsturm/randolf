@@ -44,14 +44,14 @@ class RandolfTest : JUnit5Minutests {
             expectThat(Randolf.create<NullableStringDC>(false)).get { a }.isNotNull()
         }
         test("detects dependency loops") {
-            data class DataClassThatContainsItelf(val recursiveField: DataClassThatContainsItelf)
+            data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
             expectThrows<RandolfException> {
-                Randolf.create<DataClassThatContainsItelf>()
+                Randolf.create<DataClassThatReferencesItself>()
             }.get { message }.isNotNull().and {
-                contains("recursion")
-                contains("detected")
-                contains("recursiveField")
-                contains(DataClassThatContainsItelf::class.java.name)
+                contains("recursion ")
+                contains("detected ")
+                contains("recursiveField ")
+                contains(" ${DataClassThatReferencesItself::class.java.simpleName}")
             }
 
         }
