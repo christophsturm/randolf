@@ -78,11 +78,11 @@ class RandolfException : RuntimeException()
 
 class Randolf private constructor(private val minimal: Boolean) {
     companion object {
-        inline fun <reified T> create(minimal: Boolean = false): T = Randolf.create(T::class, minimal)
-        fun <T> create(kClass: KClass<*>, minimal: Boolean = false): T = Randolf(minimal).create(kClass) as T
+        inline fun <reified T : Any> create(minimal: Boolean = false): T = Randolf.create(T::class, minimal)
+        fun <T : Any> create(kClass: KClass<T>, minimal: Boolean = false): T = Randolf(minimal).create(kClass)
     }
 
-    fun create(kClass: KClass<*>): Any {
+    fun <T : Any> create(kClass: KClass<T>): T {
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
