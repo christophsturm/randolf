@@ -1,4 +1,3 @@
-import com.oneeyedmen.minutest.experimental.SKIP
 import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
@@ -48,11 +47,13 @@ class RandolfTest : JUnit5Minutests {
             data class NullableStringDC(val a: String?)
             expectThat(Randolf.create<NullableStringDC>(false)).get { a }.isNotNull()
         }
-        SKIP - test("detects dependency loops") {
+        test("detects dependency loops") {
             data class DataClassThatContainsItelf(val recursiveField: DataClassThatContainsItelf)
             expectThrows<RandolfException> {
                 Randolf.create<DataClassThatContainsItelf>()
             }.get { message }.isNotNull().and {
+                contains("recursion")
+                contains("detected")
                 contains("recursiveField")
                 contains(DataClassThatContainsItelf::class.java.name)
             }
@@ -74,15 +75,19 @@ class RandolfTest : JUnit5Minutests {
     }
 }
 
-class RandolfException : RuntimeException()
+class RandolfException(message: String) : RuntimeException(message)
 
 class Randolf private constructor(private val minimal: Boolean) {
     companion object {
         inline fun <reified T : Any> create(minimal: Boolean = false): T = Randolf.create(T::class, minimal)
-        fun <T : Any> create(kClass: KClass<T>, minimal: Boolean = false): T = Randolf(minimal).create(kClass)
+        fun <T : Any> create(kClass: KClass<T>, minimal: Boolean = false): T = Randolf(minimal).create(kClass, "<root>")
     }
 
-    fun <T : Any> create(kClass: KClass<T>): T {
+    val path = mutableListOf<KClass<*>>()
+
+    fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
+        if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName of type $kClass")
+        path.add(kClass)
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
@@ -95,9 +100,10 @@ class Randolf private constructor(private val minimal: Boolean) {
                 Int::class.createType() -> ThreadLocalRandom.current().nextInt()
                 Long::class.createType() -> ThreadLocalRandom.current().nextLong()
                 Double::class.createType() -> ThreadLocalRandom.current().nextDouble()
-                else -> create(Class.forName(type.javaType.typeName).kotlin)
+                else -> create(Class.forName(type.javaType.typeName).kotlin, parameter.name!!)
             }
         }
+        path.remove(kClass)
         return constructor.call(*parameterValues.toTypedArray())
     }
 
