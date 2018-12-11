@@ -11,6 +11,8 @@ class Randolf private constructor(private val minimal: Boolean) {
         private val INT = Int::class.createType()
         private val LONG = Long::class.createType()
         private val DOUBLE = Double::class.createType()
+        // just ASCII for now, this could easily be made configurable
+        private val STRING_CHARACTERS = ('0'..'z').toList().toTypedArray()
     }
 
     private val path = mutableSetOf<KClass<*>>()
@@ -25,7 +27,7 @@ class Randolf private constructor(private val minimal: Boolean) {
             val type = parameter.type
 
             if (minimal && type.isMarkedNullable) null else when (type) {
-                STRING -> if (minimal) "" else ('A'..'z').map { it }.shuffled().subList(0, 20).joinToString("")
+                STRING -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
                 INT -> kotlin.random.Random.nextInt()
                 LONG -> kotlin.random.Random.nextLong()
                 DOUBLE -> kotlin.random.Random.nextDouble()
