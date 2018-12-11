@@ -1,6 +1,6 @@
 import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
-import com.oneeyedmen.minutest.junit.context
+import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.assertions.hasLength
 import strikt.assertions.isEmpty
@@ -16,11 +16,7 @@ class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
 
 
-    override val tests = context<Unit>(transform = skipAndFocus) {
-        test("also sets nullable fields") {
-            data class NullableStringDC(val a: String?)
-            expectThat(Randolf.create<NullableStringDC>(false)).get { a }.isNotNull()
-        }
+    override val tests = rootContext<Unit>(transform = skipAndFocus) {
         test("sets string properties to 20 random characters") {
             val firstInstance = Randolf.create<StringDC>()
             expectThat(firstInstance).get { stringProperty }.hasLength(20)
@@ -41,9 +37,13 @@ class RandolfTest : JUnit5Minutests {
             expectThat(Randolf.create<DoubleDC>()).isNotEqualTo(Randolf.create<DoubleDC>())
         }
 
-        test("can create a data class with a nested data class") {
-            data class IntFieldsAndNestedDataClassDC(val a: Int, val b: Int, val c: StringDC)
-            Randolf.create<IntFieldsAndNestedDataClassDC>()
+        test("initializes nested data classes") {
+            data class DataClassDC(val otherDataClassProperty: StringDC)
+            expectThat(Randolf.create<DataClassDC>()).isNotEqualTo(Randolf.create<DataClassDC>())
+        }
+        test("also sets nullable fields") {
+            data class NullableStringDC(val a: String?)
+            expectThat(Randolf.create<NullableStringDC>(false)).get { a }.isNotNull()
         }
         context("minimal mode") {
 
