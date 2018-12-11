@@ -76,9 +76,10 @@ class RandolfTest : JUnit5Minutests {
 
 class RandolfException : RuntimeException()
 
-class Randolf(private val minimal: Boolean) {
+class Randolf private constructor(private val minimal: Boolean) {
     companion object {
-        inline fun <reified T> create(minimal: Boolean = false): T = Randolf(minimal).create(T::class) as T
+        inline fun <reified T> create(minimal: Boolean = false): T = Randolf.create(T::class, minimal)
+        fun <T> create(kClass: KClass<*>, minimal: Boolean = false): T = Randolf(minimal).create(kClass) as T
     }
 
     fun create(kClass: KClass<*>): Any {
