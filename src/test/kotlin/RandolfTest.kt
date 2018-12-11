@@ -12,56 +12,56 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.javaType
 
-class RundomeTest : JUnit5Minutests {
+class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
 
 
     override val tests = context<Unit>(transform = skipAndFocus) {
         test("also sets nullable fields") {
             data class NullableStringDC(val a: String?)
-            expectThat(Rundome.create<NullableStringDC>(false)).get { a }.isNotNull()
+            expectThat(Randolf.create<NullableStringDC>(false)).get { a }.isNotNull()
         }
         test("sets string properties to 20 random characters") {
-            val firstInstance = Rundome.create<StringDC>()
+            val firstInstance = Randolf.create<StringDC>()
             expectThat(firstInstance).get { stringProperty }.hasLength(20)
 
-            expectThat(Rundome.create<StringDC>()).isNotEqualTo(firstInstance)
+            expectThat(Randolf.create<StringDC>()).isNotEqualTo(firstInstance)
         }
 
         test("sets Integer properties to a random value") {
             data class IntegerDC(val integerProperty: Int)
-            expectThat(Rundome.create<IntegerDC>()).isNotEqualTo(Rundome.create<IntegerDC>())
+            expectThat(Randolf.create<IntegerDC>()).isNotEqualTo(Randolf.create<IntegerDC>())
         }
         test("sets Long properties to a random value") {
             data class LongDC(val longProperty: Long)
-            expectThat(Rundome.create<LongDC>()).isNotEqualTo(Rundome.create<LongDC>())
+            expectThat(Randolf.create<LongDC>()).isNotEqualTo(Randolf.create<LongDC>())
         }
         test("sets Double properties to a random value") {
             data class DoubleDC(val doubleProperty: Double)
-            expectThat(Rundome.create<DoubleDC>()).isNotEqualTo(Rundome.create<DoubleDC>())
+            expectThat(Randolf.create<DoubleDC>()).isNotEqualTo(Randolf.create<DoubleDC>())
         }
 
         test("can create a data class with a nested data class") {
             data class IntFieldsAndNestedDataClassDC(val a: Int, val b: Int, val c: StringDC)
-            Rundome.create<IntFieldsAndNestedDataClassDC>()
+            Randolf.create<IntFieldsAndNestedDataClassDC>()
         }
         context("minimal mode") {
 
             test("sets nullable properties to null") {
                 data class NullableStringDC(val a: String?)
-                expectThat(Rundome.create<NullableStringDC>(true)).get { a }.isNull()
+                expectThat(Randolf.create<NullableStringDC>(true)).get { a }.isNull()
             }
 
             test("sets string properties to empty string") {
                 data class StringDC(val a: String)
-                expectThat(Rundome.create<StringDC>(true)).get { a }.isEmpty()
+                expectThat(Randolf.create<StringDC>(true)).get { a }.isEmpty()
             }
 
         }
     }
 }
 
-object Rundome {
+object Randolf {
     inline fun <reified T> create(minimal: Boolean = false): T = create(T::class, minimal) as T
 
     fun create(kClass: KClass<*>, minimal: Boolean = false): Any {
