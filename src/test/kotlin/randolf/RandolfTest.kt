@@ -80,11 +80,20 @@ class RandolfTest : JUnit5Minutests {
         }
 
         test("sets lists of supported values") {
-            data class ListDC(val listOfStrings: List<String>)
+            data class ListDC(
+                val listOfStrings: List<String>, val listOfInts: List<Int>, val listOfLongs: List<Long>,
+                val listOfDoubles: List<Double>, val listOfEnums: List<BeanType>
+            )
 
             val first = Randolf.create<ListDC>()
-            expectThat(first.listOfStrings).isNotEmpty()
-            expectThat(first).isNotEqualTo(Randolf.create())
+            expectThat(first) {
+                get { listOfStrings }.isNotEmpty()
+                get { listOfInts }.isNotEmpty()
+                get { listOfLongs }.isNotEmpty()
+                get { listOfDoubles }.isNotEmpty()
+                get { listOfEnums }.isNotEmpty()
+                isNotEqualTo(Randolf.create())
+            }
         }
 
         test("detects dependency loops") {
