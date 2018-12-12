@@ -64,14 +64,11 @@ class RandolfTest : JUnit5Minutests {
             data class DataClassDC(val otherDataClassProperty: StringDC)
             expectThat(Randolf.create<DataClassDC>()).isNotEqualTo(Randolf.create())
         }
+        data class NullableFieldsDC(
+            val string: String?, val int: Int?, val long: Long?, val double: Double?, val enum: BeanType?
+        )
+
         test("also sets nullable fields") {
-            data class NullableFieldsDC(
-                val string: String?,
-                val int: Int?,
-                val long: Long?,
-                val double: Double?,
-                val enum: BeanType?
-            )
             expectThat(Randolf.create<NullableFieldsDC>()) {
                 get { string }.isNotNull()
                 get { int }.isNotNull()
@@ -102,8 +99,13 @@ class RandolfTest : JUnit5Minutests {
         context("minimal mode") {
 
             test("sets nullable properties to null") {
-                data class NullableStringDC(val a: String?)
-                expectThat(Randolf.create<NullableStringDC>(true)).get { a }.isNull()
+                expectThat(Randolf.create<NullableFieldsDC>(minimal = true)) {
+                    get { string }.isNull()
+                    get { int }.isNull()
+                    get { long }.isNull()
+                    get { double }.isNull()
+                    get { enum }.isNull()
+                }
             }
 
             test("sets string properties to empty string") {
