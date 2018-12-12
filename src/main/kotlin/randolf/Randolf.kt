@@ -37,6 +37,7 @@ class Randolf private constructor(private val minimal: Boolean) {
         else if (isEnum) {
             parameterKClass.java.enumConstants.random()
         } else when (parameterKClass) {
+            Collection::class -> makeList(type, parameterName)
             List::class -> makeList(type, parameterName)
             Set::class -> makeList(type, parameterName).toSet()
             String::class -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")

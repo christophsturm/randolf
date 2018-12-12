@@ -116,6 +116,23 @@ class RandolfTest : JUnit5Minutests {
             }
         }
 
+        data class CollectionDC(
+            val strings: Collection<String>, val ints: Collection<Int>, val longs: Collection<Long>,
+            val doubles: Collection<Double>, val enums: Collection<BeanType>
+        )
+
+        test("sets lists of supported values") {
+            expectThat(Randolf.create<CollectionDC>()).isNotEqualTo(Randolf.create())
+        }
+        test("lists have 1 to 10 entries") {
+            expectThat((0..10).map { Randolf.create<CollectionDC>() }).all {
+                get { strings }.isNotEmpty().size.isLessThan(11)
+                get { ints }.isNotEmpty().size.isLessThan(11)
+                get { longs }.isNotEmpty().size.isLessThan(11)
+                get { doubles }.isNotEmpty().size.isLessThan(11)
+                get { enums }.isNotEmpty().size.isLessThan(11)
+            }
+        }
         test("detects dependency loops") {
             data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
             expectThrows<RandolfException> {
