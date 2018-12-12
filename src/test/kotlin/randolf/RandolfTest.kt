@@ -87,16 +87,7 @@ class RandolfTest : JUnit5Minutests {
         )
 
         test("sets lists of supported values") {
-
-            val first = Randolf.create<ListDC>()
-            expectThat(first) {
-                get { listOfStrings }.isNotEmpty()
-                get { listOfInts }.isNotEmpty()
-                get { listOfLongs }.isNotEmpty()
-                get { listOfDoubles }.isNotEmpty()
-                get { listOfEnums }.isNotEmpty()
-                isNotEqualTo(Randolf.create())
-            }
+            expectThat(Randolf.create<ListDC>()).isNotEqualTo(Randolf.create())
         }
         test("lists have 1 to 10 entries") {
 
