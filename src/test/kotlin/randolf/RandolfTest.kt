@@ -17,6 +17,9 @@ class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
 
 
+    enum class BeanType { ROBUSTA, ARABICA
+    }
+
     override val tests = rootContext<Unit>(transform = skipAndFocus) {
         test("how it looks and what it does") {
             data class Group(val name: String)
@@ -51,6 +54,14 @@ class RandolfTest : JUnit5Minutests {
             expectThat(Randolf.create<DoubleDC>()).isNotEqualTo(Randolf.create())
         }
 
+        test("sets enum properties to a random value") {
+            data class EnumDC(val enumProperty: BeanType)
+            // create 10 instances and check that not all of them are the same
+            expectThat((1..10).map { Randolf.create<EnumDC>() }.map { it.enumProperty }).contains(
+                BeanType.ROBUSTA,
+                BeanType.ARABICA
+            )
+        }
         test("initializes nested data classes") {
             data class DataClassDC(val otherDataClassProperty: StringDC)
             expectThat(Randolf.create<DataClassDC>()).isNotEqualTo(Randolf.create())

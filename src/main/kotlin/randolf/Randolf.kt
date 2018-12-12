@@ -2,6 +2,7 @@ package randolf
 
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
+import kotlin.reflect.jvm.javaType
 
 class Randolf private constructor(private val minimal: Boolean) {
     companion object {
@@ -27,7 +28,10 @@ class Randolf private constructor(private val minimal: Boolean) {
         val parameterValues = parameters.map { parameter ->
             val type = parameter.type
 
-            if (minimal && type.isMarkedNullable) null else when (type) {
+            val isEnum = type.javaType.let { it is Class<*> && it.isEnum }
+            if (isEnum) {
+                (type.classifier as KClass<*>).java.enumConstants.random()
+            } else if (minimal && type.isMarkedNullable) null else when (type) {
                 STRING -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
                 INT -> kotlin.random.Random.nextInt()
                 LONG -> kotlin.random.Random.nextLong()
