@@ -24,6 +24,6 @@ print(Randolf.create<User>())
 
 potential next steps: 
 * more types
-* add support for list types (list or collection or set of all supported values)
+* add support for more list types (collection or set of all supported values)
 * add support for map types
 * add an optional non random mode inspired by how fakir works (https://github.com/dmcg/fakir)
