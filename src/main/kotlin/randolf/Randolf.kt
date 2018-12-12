@@ -41,7 +41,7 @@ class Randolf private constructor(private val minimal: Boolean) {
                 if (minimal)
                     emptyList<Any>()
                 else
-                    (0..Random.nextInt(10) + 1).mapTo(LinkedList()) {
+                    (0..Random.nextInt(9) + 1).mapTo(LinkedList()) {
                         createValue(type.arguments.single().type!!, parameterName)
                     }
             }

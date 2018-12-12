@@ -5,13 +5,16 @@ import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
+import strikt.assertions.all
 import strikt.assertions.contains
 import strikt.assertions.hasLength
 import strikt.assertions.isEmpty
+import strikt.assertions.isLessThan
 import strikt.assertions.isNotEmpty
 import strikt.assertions.isNotEqualTo
 import strikt.assertions.isNotNull
 import strikt.assertions.isNull
+import strikt.assertions.size
 
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
@@ -78,12 +81,12 @@ class RandolfTest : JUnit5Minutests {
                 get { enum }.isNotNull()
             }
         }
+        data class ListDC(
+            val listOfStrings: List<String>, val listOfInts: List<Int>, val listOfLongs: List<Long>,
+            val listOfDoubles: List<Double>, val listOfEnums: List<BeanType>
+        )
 
         test("sets lists of supported values") {
-            data class ListDC(
-                val listOfStrings: List<String>, val listOfInts: List<Int>, val listOfLongs: List<Long>,
-                val listOfDoubles: List<Double>, val listOfEnums: List<BeanType>
-            )
 
             val first = Randolf.create<ListDC>()
             expectThat(first) {
@@ -93,6 +96,16 @@ class RandolfTest : JUnit5Minutests {
                 get { listOfDoubles }.isNotEmpty()
                 get { listOfEnums }.isNotEmpty()
                 isNotEqualTo(Randolf.create())
+            }
+        }
+        test("lists have 1 to 10 entries") {
+
+            expectThat((0..10).map { Randolf.create<ListDC>() }).all {
+                get { listOfStrings }.isNotEmpty().size.isLessThan(11)
+                get { listOfInts }.isNotEmpty().size.isLessThan(11)
+                get { listOfLongs }.isNotEmpty().size.isLessThan(11)
+                get { listOfDoubles }.isNotEmpty().size.isLessThan(11)
+                get { listOfEnums }.isNotEmpty().size.isLessThan(11)
             }
         }
 
