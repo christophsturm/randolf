@@ -8,7 +8,6 @@ import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.*
 import java.time.Instant
-import kotlin.reflect.full.createType
 
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
@@ -49,11 +48,16 @@ class RandolfTest : JUnit5Minutests {
         }
         test("supports custom mappings") {
             val now = Instant.now()
-            Randolf.addMapping(Instant::class.createType()) { now }
-            data class WithInstant(val name: String, val date: Instant)
+            Randolf.addMapping(Instant::class) { now }
+            data class WithInstant(val name: String, val date: Instant, val nullableDate: Instant?)
 
             val instance = Randolf.create<WithInstant>()
             expectThat(instance.date).isEqualTo(now)
+            expectThat(instance.nullableDate).isEqualTo(now)
+        }
+        test("supports nullable types") {
+            data class Nullables(val nullableInt: Int?, val nullableDouble: Double?, val nullableString: String?, val nullableLong: Long?)
+            Randolf.create<Nullables>()
         }
         test("initializes nested data classes") {
             data class DataClassDC(val otherDataClassProperty: StringDC)

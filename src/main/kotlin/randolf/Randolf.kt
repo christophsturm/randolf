@@ -9,22 +9,21 @@ class Randolf private constructor(private val minimal: Boolean) {
         inline fun <reified T : Any> create(minimal: Boolean = false): T = create(T::class, minimal)
         fun <T : Any> create(kClass: KClass<T>, minimal: Boolean = false): T = Randolf(minimal).create(kClass, "<root>")
 
-        private val STRING = String::class.createType()
-        private val INT = Int::class.createType()
-        private val LONG = Long::class.createType()
-        private val DOUBLE = Double::class.createType()
         // just ASCII for now, this could easily be made configurable
         private val STRING_CHARACTERS = ('0'..'z').toList().toTypedArray()
-        private var mappings: Map<KType, (minimal: Boolean) -> Any?> = mapOf(
-                STRING to { minimal ->
-                    if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
-                },
-                INT to { _ -> kotlin.random.Random.nextInt() },
-                LONG to { _ -> kotlin.random.Random.nextLong() },
-                DOUBLE to { _ -> kotlin.random.Random.nextDouble() })
+        private var mappings: Map<KType, (minimal: Boolean) -> Any?> = emptyMap()
 
-        fun addMapping(type: KType, mf: (minimal: Boolean) -> Any?) {
-            mappings = mappings.plus(type to mf)
+        fun addMapping(type: KClass<*>, mf: (minimal: Boolean) -> Any?) {
+            mappings = mappings.plus(type.createType() to mf).plus(type.createType(nullable = true) to mf)
+        }
+
+        init {
+            addMapping(String::class) { minimal ->
+                if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
+            }
+            addMapping(Int::class) { kotlin.random.Random.nextInt() }
+            addMapping(Long::class) { kotlin.random.Random.nextLong() }
+            addMapping(Double::class) { kotlin.random.Random.nextDouble() }
         }
     }
 
@@ -39,7 +38,12 @@ class Randolf private constructor(private val minimal: Boolean) {
         val parameterValues = parameters.map { parameter ->
             val type = parameter.type
             if (minimal && type.isMarkedNullable) null else {
-                mappings[type]?.invoke(minimal) ?: create(type.classifier as KClass<*>, parameter.name!!)
+                val mappingFunction = mappings[type]
+                if (mappingFunction == null) {
+                    create(type.classifier as KClass<*>, parameter.name!!)
+                } else {
+                    mappingFunction.invoke(minimal)
+                }
             }
         }
         path.remove(kClass)
