@@ -6,12 +6,9 @@ import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
-import strikt.assertions.contains
-import strikt.assertions.hasLength
-import strikt.assertions.isEmpty
-import strikt.assertions.isNotEqualTo
-import strikt.assertions.isNotNull
-import strikt.assertions.isNull
+import strikt.assertions.*
+import java.time.Instant
+import kotlin.reflect.full.createType
 
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
@@ -50,7 +47,14 @@ class RandolfTest : JUnit5Minutests {
             data class DoubleDC(val doubleProperty: Double)
             expectThat(Randolf.create<DoubleDC>()).isNotEqualTo(Randolf.create())
         }
+        test("supports custom mappings") {
+            val now = Instant.now()
+            Randolf.addMapping(Instant::class.createType()) { now }
+            data class WithInstant(val name: String, val date: Instant)
 
+            val instance = Randolf.create<WithInstant>()
+            expectThat(instance.date).isEqualTo(now)
+        }
         test("initializes nested data classes") {
             data class DataClassDC(val otherDataClassProperty: StringDC)
             expectThat(Randolf.create<DataClassDC>()).isNotEqualTo(Randolf.create())

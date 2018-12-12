@@ -1,6 +1,7 @@
 package randolf
 
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 
 class Randolf private constructor(private val minimal: Boolean) {
@@ -14,6 +15,17 @@ class Randolf private constructor(private val minimal: Boolean) {
         private val DOUBLE = Double::class.createType()
         // just ASCII for now, this could easily be made configurable
         private val STRING_CHARACTERS = ('0'..'z').toList().toTypedArray()
+        private var mappings: Map<KType, (minimal: Boolean) -> Any?> = mapOf(
+                STRING to { minimal ->
+                    if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
+                },
+                INT to { _ -> kotlin.random.Random.nextInt() },
+                LONG to { _ -> kotlin.random.Random.nextLong() },
+                DOUBLE to { _ -> kotlin.random.Random.nextDouble() })
+
+        fun addMapping(type: KType, mf: (minimal: Boolean) -> Any?) {
+            mappings = mappings.plus(type to mf)
+        }
     }
 
     private val path = mutableSetOf<KClass<*>>()
@@ -26,13 +38,8 @@ class Randolf private constructor(private val minimal: Boolean) {
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
             val type = parameter.type
-
-            if (minimal && type.isMarkedNullable) null else when (type) {
-                STRING -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
-                INT -> kotlin.random.Random.nextInt()
-                LONG -> kotlin.random.Random.nextLong()
-                DOUBLE -> kotlin.random.Random.nextDouble()
-                else -> create(type.classifier as KClass<*>, parameter.name!!)
+            if (minimal && type.isMarkedNullable) null else {
+                mappings[type]?.invoke(minimal) ?: create(type.classifier as KClass<*>, parameter.name!!)
             }
         }
         path.remove(kClass)
