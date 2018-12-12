@@ -1,5 +1,6 @@
 package randolf
 
+import java.util.*
 import kotlin.random.Random
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -40,7 +41,12 @@ class Randolf private constructor(private val minimal: Boolean) {
                 if (minimal)
                     emptyList<Any>()
                 else
-                    listOf(createValue(type.arguments.single().type!!, parameterName))
+                    (0..Random.nextInt(10) + 1).mapTo(LinkedList()) {
+                        createValue(
+                            type.arguments.single().type!!,
+                            parameterName
+                        )
+                    }
             }
             String::class -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
             Int::class -> Random.nextInt()
