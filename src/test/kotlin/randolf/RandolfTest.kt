@@ -82,21 +82,37 @@ class RandolfTest : JUnit5Minutests {
             }
         }
         data class ListDC(
-            val listOfStrings: List<String>, val listOfInts: List<Int>, val listOfLongs: List<Long>,
-            val listOfDoubles: List<Double>, val listOfEnums: List<BeanType>
+            val strings: List<String>, val ints: List<Int>, val longs: List<Long>,
+            val doubles: List<Double>, val enums: List<BeanType>
         )
 
         test("sets lists of supported values") {
             expectThat(Randolf.create<ListDC>()).isNotEqualTo(Randolf.create())
         }
         test("lists have 1 to 10 entries") {
-
             expectThat((0..10).map { Randolf.create<ListDC>() }).all {
-                get { listOfStrings }.isNotEmpty().size.isLessThan(11)
-                get { listOfInts }.isNotEmpty().size.isLessThan(11)
-                get { listOfLongs }.isNotEmpty().size.isLessThan(11)
-                get { listOfDoubles }.isNotEmpty().size.isLessThan(11)
-                get { listOfEnums }.isNotEmpty().size.isLessThan(11)
+                get { strings }.isNotEmpty().size.isLessThan(11)
+                get { ints }.isNotEmpty().size.isLessThan(11)
+                get { longs }.isNotEmpty().size.isLessThan(11)
+                get { doubles }.isNotEmpty().size.isLessThan(11)
+                get { enums }.isNotEmpty().size.isLessThan(11)
+            }
+        }
+
+        data class SetDC(
+            val strings: Set<String>, val ints: Set<Int>, val longs: Set<Long>,
+            val doubles: Set<Double>, val enums: Set<BeanType>
+        )
+        test("sets sets of supported values") {
+            expectThat(Randolf.create<SetDC>()).isNotEqualTo(Randolf.create())
+        }
+        test("sets have 1 to 10 entries") {
+            expectThat((0..10).map { Randolf.create<SetDC>() }).all {
+                get { strings }.isNotEmpty().size.isLessThan(11)
+                get { ints }.isNotEmpty().size.isLessThan(11)
+                get { longs }.isNotEmpty().size.isLessThan(11)
+                get { doubles }.isNotEmpty().size.isLessThan(11)
+                get { enums }.isNotEmpty().size.isLessThan(11)
             }
         }
 
