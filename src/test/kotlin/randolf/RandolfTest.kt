@@ -18,6 +18,20 @@ class RandolfTest : JUnit5Minutests {
 
 
     override val tests = rootContext<Unit>(transform = skipAndFocus) {
+        test("how it looks and what it does") {
+            data class Group(val name: String)
+            data class User(
+                val firstName: String,
+                val name: String,
+                val age: Int,
+                val lat: Double,
+                val long: Double,
+                val group: Group
+            )
+            print(Randolf.create<User>())
+            // => User(firstName=xdUpnBjqLMgOmb[U25ym, name=`6Eb2K4uO4;pv:i;V@AI, age=-776962503, lat=0.8399883812751676, long=0.40143311870843756, group=Group(name=Q\M1^ZIphuEZwlC<43SX))
+        }
+
         test("sets string properties to 20 random characters") {
             val firstInstance = Randolf.create<StringDC>()
             expectThat(firstInstance).get { stringProperty }.hasLength(20)
@@ -45,6 +59,7 @@ class RandolfTest : JUnit5Minutests {
             data class NullableStringDC(val a: String?)
             expectThat(Randolf.create<NullableStringDC>(false)).get { a }.isNotNull()
         }
+
         SKIP - test("sets lists of supported values") {
             // this will be fun and require some refactoring.
             data class ListDC(val listOfStrings: List<String>)
