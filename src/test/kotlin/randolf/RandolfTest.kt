@@ -27,7 +27,8 @@ class RandolfTest : JUnit5Minutests {
                 val name: String,
                 val age: Int,
                 val lat: Double,
-                val long: Double, val favoriteCoffee: BeanType,
+                val long: Double,
+                val favoriteCoffee: BeanType,
                 val group: Group
             )
             print(Randolf.create<User>())
