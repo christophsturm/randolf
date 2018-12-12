@@ -65,8 +65,20 @@ class RandolfTest : JUnit5Minutests {
             expectThat(Randolf.create<DataClassDC>()).isNotEqualTo(Randolf.create())
         }
         test("also sets nullable fields") {
-            data class NullableStringDC(val a: String?)
-            expectThat(Randolf.create<NullableStringDC>(false)).get { a }.isNotNull()
+            data class NullableFieldsDC(
+                val string: String?,
+                val int: Int?,
+                val long: Long?,
+                val double: Double?,
+                val enum: BeanType?
+            )
+            expectThat(Randolf.create<NullableFieldsDC>()) {
+                get { string }.isNotNull()
+                get { int }.isNotNull()
+                get { long }.isNotNull()
+                get { double }.isNotNull()
+                get { enum }.isNotNull()
+            }
         }
 
         SKIP - test("sets lists of supported values") {

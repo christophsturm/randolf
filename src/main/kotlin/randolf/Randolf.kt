@@ -28,15 +28,16 @@ class Randolf private constructor(private val minimal: Boolean) {
         val parameterValues = parameters.map { parameter ->
             val type = parameter.type
 
+            val parameterKClass = type.classifier as KClass<*>
             val isEnum = type.javaType.let { it is Class<*> && it.isEnum }
             if (isEnum) {
-                (type.classifier as KClass<*>).java.enumConstants.random()
-            } else if (minimal && type.isMarkedNullable) null else when (type) {
-                STRING -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
-                INT -> kotlin.random.Random.nextInt()
-                LONG -> kotlin.random.Random.nextLong()
-                DOUBLE -> kotlin.random.Random.nextDouble()
-                else -> create(type.classifier as KClass<*>, parameter.name!!)
+                parameterKClass.java.enumConstants.random()
+            } else if (minimal && type.isMarkedNullable) null else when (parameterKClass) {
+                String::class -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
+                Int::class -> kotlin.random.Random.nextInt()
+                Long::class -> kotlin.random.Random.nextLong()
+                Double::class -> kotlin.random.Random.nextDouble()
+                else -> create(parameterKClass, parameter.name!!)
             }
         }
         path.remove(kClass)
