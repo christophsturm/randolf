@@ -42,10 +42,7 @@ class Randolf private constructor(private val minimal: Boolean) {
                     emptyList<Any>()
                 else
                     (0..Random.nextInt(10) + 1).mapTo(LinkedList()) {
-                        createValue(
-                            type.arguments.single().type!!,
-                            parameterName
-                        )
+                        createValue(type.arguments.single().type!!, parameterName)
                     }
             }
             String::class -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
