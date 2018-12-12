@@ -12,17 +12,19 @@ data class User(
     val lat: Double,
     val long: Double,
     val favoriteCoffee: BeanType,
-    val group: Group
+    val group: List<Group>
 )
 print(Randolf.create<User>())
         
-=> User(firstName=VhVQgxnAcCVANLApIDuY, name=tDJcorhigjHyxsBVD gt, age=-1644047505, lat=0.6931764523093435, long=0.4000050118728149, favoriteCoffee=ROBUSTA, group=Group(name=ztfAZJIJ sVJdQvvZvKq))
+//=> User(firstName=UVQyniDCPDuxYleOqVlx, name=xKQtkvybVJGeXHWUPBSE, age=12517728, lat=0.39825335948498386, long=0.1518043402275937, favoriteCoffee=ARABICA, groups=[Group(name=TCZRDtzVuKrDqrmjgdqS), Group(name= txATFFGAPTXTNBeuCcN), Group(name=EiMytHwslatclHMaCDig), Group(name=I DFdlkHxiXxwXMdjHYo), Group(name=wbhsAlk wPmZkLCkBCJe), Group(name=LwBn WbOrUHKojWjbYBU), Group(name=qZryMZSZMhjgGtYUWQHP), Group(name=QcfoKlV p akKYqrEXRG)])
+
+
 
 
 ```
 
 potential next steps: 
 * more types
-* add support for list types (list or collection or set of all supported values)
+* add support for more list types (collection or set of all supported values)
 * add support for map types
 * add an optional non random mode inspired by how fakir works (https://github.com/dmcg/fakir)

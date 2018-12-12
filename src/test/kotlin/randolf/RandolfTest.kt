@@ -1,17 +1,20 @@
 package randolf
 
-import com.oneeyedmen.minutest.experimental.SKIP
 import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
+import strikt.assertions.all
 import strikt.assertions.contains
 import strikt.assertions.hasLength
 import strikt.assertions.isEmpty
+import strikt.assertions.isLessThan
+import strikt.assertions.isNotEmpty
 import strikt.assertions.isNotEqualTo
 import strikt.assertions.isNotNull
 import strikt.assertions.isNull
+import strikt.assertions.size
 
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
@@ -29,10 +32,10 @@ class RandolfTest : JUnit5Minutests {
                 val lat: Double,
                 val long: Double,
                 val favoriteCoffee: BeanType,
-                val group: Group
+                val groups: List<Group>
             )
             print(Randolf.create<User>())
-            // => User(firstName=VhVQgxnAcCVANLApIDuY, name=tDJcorhigjHyxsBVD gt, age=-1644047505, lat=0.6931764523093435, long=0.4000050118728149, favoriteCoffee=ROBUSTA, group=Group(name=ztfAZJIJ sVJdQvvZvKq))
+            // => User(firstName=UVQyniDCPDuxYleOqVlx, name=xKQtkvybVJGeXHWUPBSE, age=12517728, lat=0.39825335948498386, long=0.1518043402275937, favoriteCoffee=ARABICA, groups=[Group(name=TCZRDtzVuKrDqrmjgdqS), Group(name= txATFFGAPTXTNBeuCcN), Group(name=EiMytHwslatclHMaCDig), Group(name=I DFdlkHxiXxwXMdjHYo), Group(name=wbhsAlk wPmZkLCkBCJe), Group(name=LwBn WbOrUHKojWjbYBU), Group(name=qZryMZSZMhjgGtYUWQHP), Group(name=QcfoKlV p akKYqrEXRG)])
         }
 
         test("sets string properties to 20 random characters") {
@@ -78,11 +81,23 @@ class RandolfTest : JUnit5Minutests {
                 get { enum }.isNotNull()
             }
         }
+        data class ListDC(
+            val listOfStrings: List<String>, val listOfInts: List<Int>, val listOfLongs: List<Long>,
+            val listOfDoubles: List<Double>, val listOfEnums: List<BeanType>
+        )
 
-        SKIP - test("sets lists of supported values") {
-            // this will be fun and require some refactoring.
-            data class ListDC(val listOfStrings: List<String>)
+        test("sets lists of supported values") {
             expectThat(Randolf.create<ListDC>()).isNotEqualTo(Randolf.create())
+        }
+        test("lists have 1 to 10 entries") {
+
+            expectThat((0..10).map { Randolf.create<ListDC>() }).all {
+                get { listOfStrings }.isNotEmpty().size.isLessThan(11)
+                get { listOfInts }.isNotEmpty().size.isLessThan(11)
+                get { listOfLongs }.isNotEmpty().size.isLessThan(11)
+                get { listOfDoubles }.isNotEmpty().size.isLessThan(11)
+                get { listOfEnums }.isNotEmpty().size.isLessThan(11)
+            }
         }
 
         test("detects dependency loops") {
@@ -112,6 +127,10 @@ class RandolfTest : JUnit5Minutests {
             test("sets string properties to empty string") {
                 data class StringDC(val a: String)
                 expectThat(Randolf.create<StringDC>(true)).get { a }.isEmpty()
+            }
+            test("sets list properties to empty list") {
+                data class ListDC(val list: List<String>)
+                expectThat(Randolf.create<ListDC>(true)).get { list }.isEmpty()
             }
 
         }
