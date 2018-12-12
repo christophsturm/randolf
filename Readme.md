@@ -16,7 +16,8 @@ data class User(
 )
 print(Randolf.create<User>())
         
-//=> User(firstName=NVPVLGnwjxkPxxGHgi M, name=AYYovrziTiAcrWVhxmDK, age=814938803, lat=0.6626560223890441, long=0.26254020631074804, favoriteCoffee=ROBUSTA, groups=[Group(name=igjxEnFyiQVvfSxTbsNb)])
+//=> User(firstName=UVQyniDCPDuxYleOqVlx, name=xKQtkvybVJGeXHWUPBSE, age=12517728, lat=0.39825335948498386, long=0.1518043402275937, favoriteCoffee=ARABICA, groups=[Group(name=TCZRDtzVuKrDqrmjgdqS), Group(name= txATFFGAPTXTNBeuCcN), Group(name=EiMytHwslatclHMaCDig), Group(name=I DFdlkHxiXxwXMdjHYo), Group(name=wbhsAlk wPmZkLCkBCJe), Group(name=LwBn WbOrUHKojWjbYBU), Group(name=qZryMZSZMhjgGtYUWQHP), Group(name=QcfoKlV p akKYqrEXRG)])
+
 
 
 
