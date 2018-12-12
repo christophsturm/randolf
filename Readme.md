@@ -12,11 +12,12 @@ data class User(
     val lat: Double,
     val long: Double,
     val favoriteCoffee: BeanType,
-    val group: Group
+    val group: List<Group>
 )
 print(Randolf.create<User>())
         
-=> User(firstName=VhVQgxnAcCVANLApIDuY, name=tDJcorhigjHyxsBVD gt, age=-1644047505, lat=0.6931764523093435, long=0.4000050118728149, favoriteCoffee=ROBUSTA, group=Group(name=ztfAZJIJ sVJdQvvZvKq))
+//=> User(firstName=NVPVLGnwjxkPxxGHgi M, name=AYYovrziTiAcrWVhxmDK, age=814938803, lat=0.6626560223890441, long=0.26254020631074804, favoriteCoffee=ROBUSTA, groups=[Group(name=igjxEnFyiQVvfSxTbsNb)])
+
 
 
 ```
