@@ -1,6 +1,5 @@
 package randolf
 
-import com.oneeyedmen.minutest.experimental.SKIP
 import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
@@ -9,6 +8,7 @@ import strikt.api.expectThrows
 import strikt.assertions.contains
 import strikt.assertions.hasLength
 import strikt.assertions.isEmpty
+import strikt.assertions.isNotEmpty
 import strikt.assertions.isNotEqualTo
 import strikt.assertions.isNotNull
 import strikt.assertions.isNull
@@ -79,10 +79,12 @@ class RandolfTest : JUnit5Minutests {
             }
         }
 
-        SKIP - test("sets lists of supported values") {
-            // this will be fun and require some refactoring.
+        test("sets lists of supported values") {
             data class ListDC(val listOfStrings: List<String>)
-            expectThat(Randolf.create<ListDC>()).isNotEqualTo(Randolf.create())
+
+            val first = Randolf.create<ListDC>()
+            expectThat(first.listOfStrings).isNotEmpty()
+            expectThat(first).isNotEqualTo(Randolf.create())
         }
 
         test("detects dependency loops") {
@@ -112,6 +114,10 @@ class RandolfTest : JUnit5Minutests {
             test("sets string properties to empty string") {
                 data class StringDC(val a: String)
                 expectThat(Randolf.create<StringDC>(true)).get { a }.isEmpty()
+            }
+            test("sets list properties to empty list") {
+                data class ListDC(val list: List<String>)
+                expectThat(Randolf.create<ListDC>(true)).get { list }.isEmpty()
             }
 
         }

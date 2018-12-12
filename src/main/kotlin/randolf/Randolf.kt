@@ -1,6 +1,8 @@
 package randolf
 
+import kotlin.random.Random
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
 class Randolf private constructor(private val minimal: Boolean) {
@@ -22,22 +24,31 @@ class Randolf private constructor(private val minimal: Boolean) {
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
             val type = parameter.type
-
-            val parameterKClass = type.classifier as KClass<*>
-            val isEnum = type.javaType.let { it is Class<*> && it.isEnum }
-            if (minimal && type.isMarkedNullable) null
-            else if (isEnum) {
-                parameterKClass.java.enumConstants.random()
-            } else when (parameterKClass) {
-                String::class -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
-                Int::class -> kotlin.random.Random.nextInt()
-                Long::class -> kotlin.random.Random.nextLong()
-                Double::class -> kotlin.random.Random.nextDouble()
-                else -> create(parameterKClass, parameter.name!!)
-            }
+            createValue(type, parameter.name!!)
         }
         path.remove(kClass)
         return constructor.call(*parameterValues.toTypedArray())
+    }
+
+    private fun createValue(type: KType, parameterName: String): Any? {
+        val parameterKClass = type.classifier as KClass<*>
+        val isEnum = type.javaType.let { it is Class<*> && it.isEnum }
+        return if (minimal && type.isMarkedNullable) null
+        else if (isEnum) {
+            parameterKClass.java.enumConstants.random()
+        } else when (parameterKClass) {
+            List::class -> {
+                if (minimal)
+                    emptyList<Any>()
+                else
+                    listOf(createValue(type.arguments.single().type!!, parameterName))
+            }
+            String::class -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
+            Int::class -> Random.nextInt()
+            Long::class -> Random.nextLong()
+            Double::class -> Random.nextDouble()
+            else -> create(parameterKClass, parameterName)
+        }
     }
 
 }
