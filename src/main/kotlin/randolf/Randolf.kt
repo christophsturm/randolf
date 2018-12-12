@@ -23,8 +23,7 @@ class Randolf private constructor(private val minimal: Boolean) {
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
-            val type = parameter.type
-            createValue(type, parameter.name!!)
+            createValue(parameter.type, parameter.name!!)
         }
         path.remove(kClass)
         return constructor.call(*parameterValues.toTypedArray())
