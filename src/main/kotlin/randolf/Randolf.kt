@@ -2,7 +2,6 @@ package randolf
 
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
-import kotlin.reflect.jvm.javaType
 
 class Randolf private constructor(private val minimal: Boolean) {
     companion object {
@@ -33,7 +32,7 @@ class Randolf private constructor(private val minimal: Boolean) {
                 INT -> kotlin.random.Random.nextInt()
                 LONG -> kotlin.random.Random.nextLong()
                 DOUBLE -> kotlin.random.Random.nextDouble()
-                else -> create(Class.forName(type.javaType.typeName).kotlin, parameter.name!!)
+                else -> create(type.classifier as KClass<*>, parameter.name!!)
             }
         }
         path.remove(kClass)
