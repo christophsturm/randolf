@@ -17,8 +17,7 @@ class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
 
 
-    enum class BeanType { ROBUSTA, ARABICA
-    }
+    enum class BeanType { ROBUSTA, ARABICA }
 
     override val tests = rootContext<Unit>(transform = skipAndFocus) {
         test("how it looks and what it does") {
@@ -28,11 +27,11 @@ class RandolfTest : JUnit5Minutests {
                 val name: String,
                 val age: Int,
                 val lat: Double,
-                val long: Double,
+                val long: Double, val favoriteCoffee: BeanType,
                 val group: Group
             )
             print(Randolf.create<User>())
-            // => User(firstName=xdUpnBjqLMgOmb[U25ym, name=`6Eb2K4uO4;pv:i;V@AI, age=-776962503, lat=0.8399883812751676, long=0.40143311870843756, group=Group(name=Q\M1^ZIphuEZwlC<43SX))
+            // => User(firstName=VhVQgxnAcCVANLApIDuY, name=tDJcorhigjHyxsBVD gt, age=-1644047505, lat=0.6931764523093435, long=0.4000050118728149, favoriteCoffee=ROBUSTA, group=Group(name=ztfAZJIJ sVJdQvvZvKq))
         }
 
         test("sets string properties to 20 random characters") {
@@ -58,8 +57,7 @@ class RandolfTest : JUnit5Minutests {
             data class EnumDC(val enumProperty: BeanType)
             // create 10 instances and check that not all of them are the same
             expectThat((1..10).map { Randolf.create<EnumDC>() }.map { it.enumProperty }).contains(
-                BeanType.ROBUSTA,
-                BeanType.ARABICA
+                BeanType.ROBUSTA, BeanType.ARABICA
             )
         }
         test("initializes nested data classes") {

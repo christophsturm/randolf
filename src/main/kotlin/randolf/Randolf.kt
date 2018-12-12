@@ -14,7 +14,7 @@ class Randolf private constructor(private val minimal: Boolean) {
         private val LONG = Long::class.createType()
         private val DOUBLE = Double::class.createType()
         // just ASCII for now, this could easily be made configurable
-        private val STRING_CHARACTERS = ('0'..'z').toList().toTypedArray()
+        private val STRING_CHARACTERS = ('A'..'Z').toList() + (('a'..'z').toList()).plus(' ').toTypedArray()
     }
 
     private val path = mutableSetOf<KClass<*>>()
