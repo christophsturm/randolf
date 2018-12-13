@@ -30,7 +30,7 @@ class RandolfTest : JUnit5Minutests {
                 val name: String,
                 val age: Int,
                 val lat: Double,
-                val long: Double,
+                val lon: Double,
                 val favoriteCoffee: BeanType,
                 val groups: List<Group>
             )
