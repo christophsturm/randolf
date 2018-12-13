@@ -81,57 +81,59 @@ class RandolfTest : JUnit5Minutests {
                 get { enum }.isNotNull()
             }
         }
-        data class ListDC(
-            val strings: List<String>, val ints: List<Int>, val longs: List<Long>,
-            val doubles: List<Double>, val enums: List<BeanType>
-        )
-
-        test("sets lists of supported values") {
-            expectThat(Randolf.create<ListDC>()).isNotEqualTo(Randolf.create())
-        }
-        test("lists have 1 to 10 entries") {
-            expectThat((0..10).map { Randolf.create<ListDC>() }).all {
-                get { strings }.isNotEmpty().size.isLessThan(11)
-                get { ints }.isNotEmpty().size.isLessThan(11)
-                get { longs }.isNotEmpty().size.isLessThan(11)
-                get { doubles }.isNotEmpty().size.isLessThan(11)
-                get { enums }.isNotEmpty().size.isLessThan(11)
+        context("collections support") {
+            data class ListDC(
+                val strings: List<String>, val ints: List<Int>, val longs: List<Long>,
+                val doubles: List<Double>, val enums: List<BeanType>
+            )
+            test("sets lists of supported  values") {
+                expectThat(Randolf.create<ListDC>()).isNotEqualTo(Randolf.create())
             }
-        }
-
-        data class SetDC(
-            val strings: Set<String>, val ints: Set<Int>, val longs: Set<Long>,
-            val doubles: Set<Double>, val enums: Set<BeanType>
-        )
-        test("sets sets of supported values") {
-            expectThat(Randolf.create<SetDC>()).isNotEqualTo(Randolf.create())
-        }
-        test("sets have 1 to 10 entries") {
-            expectThat((0..10).map { Randolf.create<SetDC>() }).all {
-                get { strings }.isNotEmpty().size.isLessThan(11)
-                get { ints }.isNotEmpty().size.isLessThan(11)
-                get { longs }.isNotEmpty().size.isLessThan(11)
-                get { doubles }.isNotEmpty().size.isLessThan(11)
-                get { enums }.isNotEmpty().size.isLessThan(11)
+            test("lists have 1 to 10 entries") {
+                expectThat((0..10).map { Randolf.create<ListDC>() }).all {
+                    get { strings }.isNotEmpty().size.isLessThan(11)
+                    get { ints }.isNotEmpty().size.isLessThan(11)
+                    get { longs }.isNotEmpty().size.isLessThan(11)
+                    get { doubles }.isNotEmpty().size.isLessThan(11)
+                    get { enums }.isNotEmpty().size.isLessThan(11)
+                }
             }
-        }
 
-        data class CollectionDC(
-            val strings: Collection<String>, val ints: Collection<Int>, val longs: Collection<Long>,
-            val doubles: Collection<Double>, val enums: Collection<BeanType>
-        )
-
-        test("sets lists of supported values") {
-            expectThat(Randolf.create<CollectionDC>()).isNotEqualTo(Randolf.create())
-        }
-        test("lists have 1 to 10 entries") {
-            expectThat((0..10).map { Randolf.create<CollectionDC>() }).all {
-                get { strings }.isNotEmpty().size.isLessThan(11)
-                get { ints }.isNotEmpty().size.isLessThan(11)
-                get { longs }.isNotEmpty().size.isLessThan(11)
-                get { doubles }.isNotEmpty().size.isLessThan(11)
-                get { enums }.isNotEmpty().size.isLessThan(11)
+            data class SetDC(
+                val strings: Set<String>, val ints: Set<Int>, val longs: Set<Long>,
+                val doubles: Set<Double>, val enums: Set<BeanType>
+            )
+            test("sets sets of supported values") {
+                expectThat(Randolf.create<SetDC>()).isNotEqualTo(Randolf.create())
             }
+            test("sets have 1 to 10 entries") {
+                expectThat((0..10).map { Randolf.create<SetDC>() }).all {
+                    get { strings }.isNotEmpty().size.isLessThan(11)
+                    get { ints }.isNotEmpty().size.isLessThan(11)
+                    get { longs }.isNotEmpty().size.isLessThan(11)
+                    get { doubles }.isNotEmpty().size.isLessThan(11)
+                    get { enums }.isNotEmpty().size.isLessThan(11)
+                }
+            }
+
+            data class CollectionDC(
+                val strings: Collection<String>, val ints: Collection<Int>, val longs: Collection<Long>,
+                val doubles: Collection<Double>, val enums: Collection<BeanType>
+            )
+
+            test("sets lists of supported values") {
+                expectThat(Randolf.create<CollectionDC>()).isNotEqualTo(Randolf.create())
+            }
+            test("lists have 1 to 10 entries") {
+                expectThat((0..10).map { Randolf.create<CollectionDC>() }).all {
+                    get { strings }.isNotEmpty().size.isLessThan(11)
+                    get { ints }.isNotEmpty().size.isLessThan(11)
+                    get { longs }.isNotEmpty().size.isLessThan(11)
+                    get { doubles }.isNotEmpty().size.isLessThan(11)
+                    get { enums }.isNotEmpty().size.isLessThan(11)
+                }
+            }
+
         }
         test("detects dependency loops") {
             data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
@@ -162,8 +164,12 @@ class RandolfTest : JUnit5Minutests {
                 expectThat(Randolf.create<StringDC>(true)).get { a }.isEmpty()
             }
             test("sets list properties to empty list") {
-                data class ListDC(val list: List<String>)
-                expectThat(Randolf.create<ListDC>(true)).get { list }.isEmpty()
+                data class ListDC(val list: List<String>, val set: Set<String>, val collection: Collection<String>)
+                expectThat(Randolf.create<ListDC>(true)) {
+                    get { list }.isEmpty()
+                    get { set }.isEmpty()
+                    get { collection }.isEmpty()
+                }
             }
 
         }
