@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junit5Version = "5.3.2"
 val junitPlatformVersion = "1.3.2"
+val kotlinVersion = "1.3.11"
 
 plugins {
     java
@@ -20,8 +21,8 @@ repositories {
 }
 
 dependencies {
-    compile(kotlin("stdlib-jdk8"))
-    compile(kotlin("reflect"))
+    compile(kotlin("stdlib-jdk8", kotlinVersion))
+    compile(kotlin("reflect", kotlinVersion))
     testImplementation("io.strikt:strikt-core:0.17.1")
     testImplementation("com.oneeyedmen:minutest:0.33.0")
 
