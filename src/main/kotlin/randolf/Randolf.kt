@@ -24,17 +24,18 @@ class Randolf private constructor(private val minimal: Boolean) {
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
-            createValue(parameter.type, parameter.name!!)
+            if (minimal && parameter.type.isMarkedNullable) null
+            else
+                createValue(parameter.type, parameter.name!!)
         }
         path.remove(kClass)
         return constructor.call(*parameterValues.toTypedArray())
     }
 
-    private fun createValue(type: KType, parameterName: String): Any? {
+    private fun createValue(type: KType, parameterName: String): Any {
         val parameterKClass = type.classifier as KClass<*>
         val isEnum = type.javaType.let { it is Class<*> && it.isEnum }
-        return if (minimal && type.isMarkedNullable) null
-        else if (isEnum) {
+        return if (isEnum) {
             parameterKClass.java.enumConstants.random()
         } else when (parameterKClass) {
             Collection::class -> makeList(type, parameterName)
@@ -48,7 +49,7 @@ class Randolf private constructor(private val minimal: Boolean) {
         }
     }
 
-    private fun makeList(type: KType, parameterName: String): List<Any?> {
+    private fun makeList(type: KType, parameterName: String): List<Any> {
         return if (minimal)
             emptyList<Any>()
         else
