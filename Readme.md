@@ -28,8 +28,8 @@ currently supported types
 * List
 * Set
 * Collection
+* Map
 
 potential next steps: 
 * more types
-* add support for map types
 * add an optional non random mode inspired by how fakir works (https://github.com/dmcg/fakir)

@@ -1,5 +1,6 @@
 package randolf
 
+import com.oneeyedmen.minutest.experimental.SKIP
 import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
@@ -134,6 +135,17 @@ class RandolfTest : JUnit5Minutests {
                 }
             }
 
+            data class MapDC(
+                val int2StringMap: Map<Int, String>
+            )
+            SKIP - test("sets maps of supported values") {
+                expectThat(Randolf.create<MapDC>()).isNotEqualTo(Randolf.create())
+            }
+            SKIP - test("maps have 1 to 10 entries") {
+                expectThat((0..10).map { Randolf.create<MapDC>() }).all {
+                    get { int2StringMap.entries }.isNotEmpty().size.isLessThan(11)
+                }
+            }
         }
         test("detects dependency loops") {
             data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
@@ -169,6 +181,12 @@ class RandolfTest : JUnit5Minutests {
                     get { list }.isEmpty()
                     get { set }.isEmpty()
                     get { collection }.isEmpty()
+                }
+            }
+            test("sets map properties to empty maps") {
+                data class MapDC(val map: Map<String, String>)
+                expectThat(Randolf.create<MapDC>(true)) {
+                    get { map }.isEmpty()
                 }
             }
 

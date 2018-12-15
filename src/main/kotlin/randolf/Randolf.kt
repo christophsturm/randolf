@@ -24,19 +24,21 @@ class Randolf private constructor(private val minimal: Boolean) {
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
-            createValue(parameter.type, parameter.name!!)
+            if (minimal && parameter.type.isMarkedNullable) null
+            else
+                createValue(parameter.type, parameter.name!!)
         }
         path.remove(kClass)
         return constructor.call(*parameterValues.toTypedArray())
     }
 
-    private fun createValue(type: KType, parameterName: String): Any? {
+    private fun createValue(type: KType, parameterName: String): Any {
         val parameterKClass = type.classifier as KClass<*>
         val isEnum = type.javaType.let { it is Class<*> && it.isEnum }
-        return if (minimal && type.isMarkedNullable) null
-        else if (isEnum) {
+        return if (isEnum) {
             parameterKClass.java.enumConstants.random()
         } else when (parameterKClass) {
+            Map::class -> makeMap(type, parameterName)
             Collection::class -> makeList(type, parameterName)
             List::class -> makeList(type, parameterName)
             Set::class -> makeList(type, parameterName).toSet()
@@ -48,15 +50,27 @@ class Randolf private constructor(private val minimal: Boolean) {
         }
     }
 
-    private fun makeList(type: KType, parameterName: String): List<Any?> {
+    private fun makeMap(type: KType, parameterName: String): Map<Any, Any> {
         return if (minimal)
-            emptyList<Any>()
+            emptyMap()
+        else {
+            val arguments = type.arguments
+            val keyType = arguments[0].type!!
+            val valueType = arguments[1].type!!
+            (0..Random.nextInt(9) + 1).map {
+                Pair(createValue(keyType, parameterName), createValue(valueType, parameterName))
+            }.toMap()
+        }
+    }
+
+    private fun makeList(type: KType, parameterName: String): List<Any> {
+        return if (minimal)
+            emptyList()
         else
             (0..Random.nextInt(9) + 1).mapTo(LinkedList()) {
                 createValue(type.arguments.single().type!!, parameterName)
             }
     }
-
 }
 
 class RandolfException(message: String) : RuntimeException(message)
