@@ -38,6 +38,7 @@ class Randolf private constructor(private val minimal: Boolean) {
         return if (isEnum) {
             parameterKClass.java.enumConstants.random()
         } else when (parameterKClass) {
+            Map::class -> makeMap(type, parameterName)
             Collection::class -> makeList(type, parameterName)
             List::class -> makeList(type, parameterName)
             Set::class -> makeList(type, parameterName).toSet()
@@ -49,15 +50,27 @@ class Randolf private constructor(private val minimal: Boolean) {
         }
     }
 
+    private fun makeMap(type: KType, parameterName: String): Map<Any, Any> {
+        return if (minimal)
+            emptyMap()
+        else {
+            val arguments = type.arguments
+            val keyType = arguments[0].type!!
+            val valueType = arguments[1].type!!
+            (0..Random.nextInt(9) + 1).map {
+                Pair(createValue(keyType, parameterName), createValue(valueType, parameterName))
+            }.toMap()
+        }
+    }
+
     private fun makeList(type: KType, parameterName: String): List<Any> {
         return if (minimal)
-            emptyList<Any>()
+            emptyList()
         else
             (0..Random.nextInt(9) + 1).mapTo(LinkedList()) {
                 createValue(type.arguments.single().type!!, parameterName)
             }
     }
-
 }
 
 class RandolfException(message: String) : RuntimeException(message)
