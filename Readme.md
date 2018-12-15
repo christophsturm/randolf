@@ -30,6 +30,8 @@ currently supported types
 * Collection
 * Map
 
-potential next steps: 
-* more types
+next steps:
+* make it configurable 
 * add an optional non random mode inspired by how fakir works (https://github.com/dmcg/fakir)
+
+[ ![Download](https://api.bintray.com/packages/christophsturm/maven/randolf/images/download.svg) ](https://bintray.com/christophsturm/maven/randolf/_latestVersion)
