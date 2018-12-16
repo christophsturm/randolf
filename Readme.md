@@ -23,7 +23,7 @@ print(Randolf.create<User>())
 # Usage:
 add this to your gradle file:
 ```
-    testCompile "com.christophsturm:randolf:0.1.0"
+    testCompile("com.christophsturm:randolf:0.1.0")
 ```
 
 and then create any kotlin data class simply like in the example above. 
