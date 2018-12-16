@@ -21,12 +21,21 @@ print(Randolf.create<User>())
 ```
 
 # Usage:
-add this to your gradle file:
+add this to your gradle file's dependency block:
+
 ```
     testCompile("com.christophsturm:randolf:0.1.0")
 ```
 
-and then create any kotlin data class simply like in the example above. 
+also add jcenter if you haven't already
+
+```
+repositories {
+    jcenter()
+}
+```
+
+then you cam create any kotlin data class simply like in the example above. 
 Or set only the fields that are absolutely necessary by calling `Randolf.create(minimal=true)` instead.
 Maybe it also works for non data classes but there's no unit test for that. If you think it should
 work better for non data classes just give an example in a github issue.
