@@ -6,11 +6,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
-class Randolf private constructor(private val minimal: Boolean) {
+class Randolf(private val minimal: Boolean = false) {
     companion object {
-        inline fun <reified T : Any> create(minimal: Boolean = false): T = create(T::class, minimal)
-        fun <T : Any> create(kClass: KClass<T>, minimal: Boolean = false): T = Randolf(minimal).create(kClass, "<root>")
-
         // just ASCII for now, this could easily be made configurable
         private val STRING_CHARACTERS = ('A'..'Z').toList() + (('a'..'z').toList()).plus(' ').toTypedArray()
     }
@@ -72,5 +69,7 @@ class Randolf private constructor(private val minimal: Boolean) {
             }
     }
 }
+
+inline fun <reified T : Any> Randolf.create(): T = this.create(T::class, "root")
 
 class RandolfException(message: String) : RuntimeException(message)
