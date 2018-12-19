@@ -6,9 +6,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
-data class RandolfConfig(val stringLength: Int = 20)
+data class RandolfConfig(val stringLength: Int = 20, val minimal: Boolean = false)
 
-class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = RandolfConfig()) {
+class Randolf(val config: RandolfConfig = RandolfConfig()) {
     companion object {
         // just ASCII for now, this could easily be made configurable
         private val STRING_CHARACTERS = ('A'..'Z').toList() + (('a'..'z').toList()).plus(' ').toTypedArray()
@@ -23,7 +23,7 @@ class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = 
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
-            if (minimal && parameter.type.isMarkedNullable) null
+            if (config.minimal && parameter.type.isMarkedNullable) null
             else
                 createValue(parameter.type, parameter.name!!)
         }
@@ -41,8 +41,8 @@ class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = 
             Collection::class -> makeList(type, parameterName)
             List::class -> makeList(type, parameterName)
             Set::class -> makeList(type, parameterName).toSet()
-            String::class -> if (minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
-                ""
+            String::class -> if (config.minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
+                    ""
             )
             Int::class -> Random.nextInt()
             Long::class -> Random.nextLong()
@@ -52,7 +52,7 @@ class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = 
     }
 
     private fun makeMap(type: KType, parameterName: String): Map<Any, Any> {
-        return if (minimal)
+        return if (config.minimal)
             emptyMap()
         else {
             val arguments = type.arguments
@@ -65,7 +65,7 @@ class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = 
     }
 
     private fun makeList(type: KType, parameterName: String): List<Any> {
-        return if (minimal)
+        return if (config.minimal)
             emptyList()
         else
             (0..Random.nextInt(9) + 1).mapTo(LinkedList()) {

@@ -6,16 +6,7 @@ import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
-import strikt.assertions.all
-import strikt.assertions.contains
-import strikt.assertions.hasLength
-import strikt.assertions.isEmpty
-import strikt.assertions.isLessThan
-import strikt.assertions.isNotEmpty
-import strikt.assertions.isNotEqualTo
-import strikt.assertions.isNotNull
-import strikt.assertions.isNull
-import strikt.assertions.size
+import strikt.assertions.*
 
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
@@ -170,7 +161,7 @@ class RandolfTest : JUnit5Minutests {
             }
         }
         context("minimal mode") {
-            fixture { Randolf(minimal = true) }
+            fixture { Randolf(RandolfConfig(minimal = true)) }
 
             test("sets nullable properties to null") {
                 expectThat(fixture.create<NullableFieldsDC>()) {
