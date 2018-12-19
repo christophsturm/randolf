@@ -6,7 +6,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
-class Randolf(private val minimal: Boolean = false) {
+data class RandolfConfig(val stringLength: Int = 20)
+
+class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = RandolfConfig()) {
     companion object {
         // just ASCII for now, this could easily be made configurable
         private val STRING_CHARACTERS = ('A'..'Z').toList() + (('a'..'z').toList()).plus(' ').toTypedArray()
@@ -39,7 +41,9 @@ class Randolf(private val minimal: Boolean = false) {
             Collection::class -> makeList(type, parameterName)
             List::class -> makeList(type, parameterName)
             Set::class -> makeList(type, parameterName).toSet()
-            String::class -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
+            String::class -> if (minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
+                ""
+            )
             Int::class -> Random.nextInt()
             Long::class -> Random.nextLong()
             Double::class -> Random.nextDouble()
@@ -71,5 +75,6 @@ class Randolf(private val minimal: Boolean = false) {
 }
 
 inline fun <reified T : Any> Randolf.create(): T = this.create(T::class, "root")
+
 
 class RandolfException(message: String) : RuntimeException(message)

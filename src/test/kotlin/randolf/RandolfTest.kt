@@ -161,6 +161,12 @@ class RandolfTest : JUnit5Minutests {
             }
 
         }
+        context("configuration") {
+            test("string length is configurable") {
+                expectThat(Randolf(config = RandolfConfig(stringLength = 25)).create<StringDC>()).get { stringProperty }
+                    .hasLength(25)
+            }
+        }
         context("minimal mode") {
             fixture { Randolf(minimal = true) }
 
