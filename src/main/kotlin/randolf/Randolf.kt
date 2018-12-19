@@ -23,7 +23,12 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
     private val typeMappings = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
         Int::class to { _, _ -> Random.nextInt() },
         Double::class to { _, _ -> Random.nextDouble() },
+        Float::class to { _, _ -> Random.nextFloat() },
         Long::class to { _, _ -> Random.nextLong() },
+        Short::class to { _, _ -> Random.nextInt().toShort() },
+        Byte::class to { _, _ -> Random.nextBytes(1).single() },
+        Boolean::class to { _, _ -> Random.nextBoolean() },
+        Char::class to { _, _ -> STRING_CHARACTERS.random() },
         String::class to { _, _ ->
             if (config.minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
                 ""
