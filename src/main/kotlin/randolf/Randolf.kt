@@ -16,6 +16,20 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
 
     private val path = mutableSetOf<KClass<*>>()
 
+    private val defaultTypeMappings = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
+            Int::class to { _, _ -> Random.nextInt() },
+            Double::class to { _, _ -> Random.nextDouble() },
+            Long::class to { _, _ -> Random.nextLong() },
+            String::class to { _, _ ->
+                if (config.minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
+                        ""
+                )
+            },
+            Map::class to { type, name -> makeMap(type, name) },
+            List::class to { type, name -> makeList(type, name) },
+            Set::class to { type, name -> makeList(type, name).toSet() },
+            Collection::class to { type, name -> makeList(type, name) }
+    )
 
     fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
         if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName with type ${kClass.simpleName}")
@@ -36,18 +50,9 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
         val isEnum = (type.javaType as? Class<*>)?.isEnum ?: false
         return if (isEnum) {
             parameterKClass.java.enumConstants.random()
-        } else when (parameterKClass) {
-            Map::class -> makeMap(type, parameterName)
-            Collection::class -> makeList(type, parameterName)
-            List::class -> makeList(type, parameterName)
-            Set::class -> makeList(type, parameterName).toSet()
-            String::class -> if (config.minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
-                    ""
-            )
-            Int::class -> Random.nextInt()
-            Long::class -> Random.nextLong()
-            Double::class -> Random.nextDouble()
-            else -> create(parameterKClass, parameterName)
+        } else {
+            val mappingFunction = defaultTypeMappings[parameterKClass]
+            mappingFunction?.invoke(type, parameterName) ?: create(parameterKClass, parameterName)
         }
     }
 
