@@ -50,7 +50,6 @@ class RandolfTest : JUnit5Minutests {
             expectThat(firstInstance).get { stringProperty }.hasLength(20)
             expectThat(firstInstance).isNotEqualTo(fixture.create())
         }
-
         test("sets Integer properties to a random value") {
             data class IntegerDC(val integerProperty: Int)
             expectThat(fixture.create<IntegerDC>()).isNotEqualTo(fixture.create())
@@ -87,6 +86,10 @@ class RandolfTest : JUnit5Minutests {
                 get { double }.isNotNull()
                 get { enum }.isNotNull()
             }
+        }
+        test("does not use default values per default") {
+            data class StringWithDefaultDC(val stringProperty: String = "unused default")
+            expectThat(fixture.create<StringWithDefaultDC>()).get { stringProperty }.isNotEqualTo("unused default")
         }
         context("collections support") {
             data class ListDC(

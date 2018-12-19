@@ -40,14 +40,14 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
         path.add(kClass)
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters
-        val parameterValues = parameters.map { parameter ->
+        val parameterValues = parameters.mapNotNull { parameter ->
             if (config.minimal && parameter.type.isMarkedNullable)
                 Pair(parameter, null)
-            else if (parameter.isOptional)
+            else if (config.minimal && parameter.isOptional)
                 null
             else
                 Pair(parameter, createValue(parameter.type, parameter.name!!))
-        }.filterNotNull().toMap()
+        }.toMap()
         path.remove(kClass)
         return constructor.callBy(parameterValues)
     }
