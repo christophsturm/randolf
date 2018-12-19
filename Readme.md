@@ -53,6 +53,11 @@ Currently supported types:
 * Int
 * Long
 * Double
+* Short
+* Float
+* Byte
+* Boolean
+* Char
 * Enums
 * List
 * Set
@@ -60,8 +65,6 @@ Currently supported types:
 * Map
 
 Next steps:
-* configuration (while still making sure that it works great without any config)
-* use a configurable random seed to reproduce test failures 
 * add an optional non random mode inspired by [fakir](https://github.com/dmcg/fakir)
 * build for kotlin/js and kotlin/native. 
 
