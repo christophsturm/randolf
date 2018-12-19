@@ -213,8 +213,11 @@ class RandolfTest : JUnit5Minutests {
                 }
             }
             test("sets not nullable properties to their default value") {
-                data class StringDC(val a: String = "string theory")
-                expectThat(fixture.create<StringDC>()).get { a }.isEqualTo("string theory")
+                data class StringDC(val string: String = "string theory", val int: Int = 42)
+                expectThat(fixture.create<StringDC>()) {
+                    get { string }.isEqualTo("string theory")
+                    get { int }.isEqualTo(42)
+                }
             }
 
         }

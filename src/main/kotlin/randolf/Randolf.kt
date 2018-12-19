@@ -41,7 +41,8 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
-            if (config.minimal && parameter.type.isMarkedNullable) Pair(parameter, null)
+            if (config.minimal && parameter.type.isMarkedNullable)
+                Pair(parameter, null)
             else if (parameter.isOptional)
                 null
             else
