@@ -18,10 +18,20 @@ import strikt.assertions.isNotNull
 import strikt.assertions.isNull
 import strikt.assertions.size
 import java.time.Instant
+import kotlin.random.Random
 
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
 
+    enum class ManyValues {
+        BLAH1,
+        BLAH2,
+        BLAH3,
+        BLAH4,
+        BLAH5,
+        BLAH6,
+        BLAH7,
+    }
 
     enum class BeanType { ROBUSTA, ARABICA }
 
@@ -80,7 +90,7 @@ class RandolfTest : JUnit5Minutests {
             expectThat(fixture.create<DataClassDC>()).isNotEqualTo(fixture.create())
         }
         data class NullableFieldsDC(
-            val string: String?, val int: Int?, val long: Long?, val double: Double?, val enum: BeanType?,
+            val string: String?, val int: Int?, val long: Long?, val double: Double?, val enum: ManyValues?,
             val byte: Byte?, val float: Float?, val short: Short?, val boolean: Boolean?, val char: Char?
         )
 
@@ -122,7 +132,7 @@ class RandolfTest : JUnit5Minutests {
 
             data class SetDC(
                 val strings: Set<String>, val ints: Set<Int>, val longs: Set<Long>,
-                val doubles: Set<Double>, val enums: Set<BeanType>
+                val doubles: Set<Double>, val enums: Set<ManyValues>
             )
             test("sets sets of supported values") {
                 expectThat(fixture.create<SetDC>()).isNotEqualTo(fixture.create())
@@ -193,6 +203,13 @@ class RandolfTest : JUnit5Minutests {
             test("string length is configurable") {
                 expectThat(Randolf(config = RandolfConfig(stringLength = 25)).create<StringDC>()).get { stringProperty }
                     .hasLength(25)
+            }
+            test("can configure random generator") {
+                val initial = Randolf(RandolfConfig(random = Random(1234))).create<NullableFieldsDC>()
+                repeat(10) {
+                    expectThat(initial).isEqualTo(Randolf(RandolfConfig(random = Random(1234))).create())
+                }
+
             }
         }
         context("minimal mode") {
