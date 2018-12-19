@@ -55,6 +55,11 @@ class RandolfTest : JUnit5Minutests {
             expectThat(firstInstance).get { stringProperty }.hasLength(20)
             expectThat(firstInstance).isNotEqualTo(fixture.create())
         }
+        test("list of characters to choose from can be configured") {
+            val randolf = Randolf(RandolfConfig(stringCharacters = listOf('a'), stringLength = 5))
+            val firstInstance = randolf.create<StringDC>()
+            expectThat(firstInstance).get { stringProperty }.isEqualTo("aaaaa")
+        }
         test("sets Integer properties to a random value") {
             data class IntegerDC(val integerProperty: Int)
             expectThat(fixture.create<IntegerDC>()).isNotEqualTo(fixture.create())
