@@ -28,6 +28,11 @@ class RandolfTest : JUnit5Minutests {
                 val age: Int,
                 val lat: Double,
                 val lon: Double,
+                val isBoss: Boolean,
+                val teamSize: Short,
+                val flags: Byte,
+                val shortName: Char,
+                val efficiency: Float,
                 val favoriteCoffee: BeanType,
                 val groups: List<Group>
             )
