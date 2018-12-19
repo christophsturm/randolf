@@ -33,7 +33,7 @@ class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = 
 
     private fun createValue(type: KType, parameterName: String): Any {
         val parameterKClass = type.classifier as KClass<*>
-        val isEnum = type.javaType.let { it is Class<*> && it.isEnum }
+        val isEnum = (type.javaType as? Class<*>)?.isEnum ?: false
         return if (isEnum) {
             parameterKClass.java.enumConstants.random()
         } else when (parameterKClass) {
