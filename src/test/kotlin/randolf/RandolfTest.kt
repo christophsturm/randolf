@@ -6,17 +6,7 @@ import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
-import strikt.assertions.all
-import strikt.assertions.contains
-import strikt.assertions.hasLength
-import strikt.assertions.isEmpty
-import strikt.assertions.isEqualTo
-import strikt.assertions.isLessThan
-import strikt.assertions.isNotEmpty
-import strikt.assertions.isNotEqualTo
-import strikt.assertions.isNotNull
-import strikt.assertions.isNull
-import strikt.assertions.size
+import strikt.assertions.*
 import java.time.Instant
 import kotlin.random.Random
 
@@ -120,13 +110,23 @@ class RandolfTest : JUnit5Minutests {
             test("sets lists of supported  values") {
                 expectThat(fixture.create<ListDC>()).isNotEqualTo(fixture.create())
             }
-            test("lists have 1 to 10 entries") {
+            test("lists have 1 to 10 entries per default") {
                 expectThat((0..10).map { fixture.create<ListDC>() }).all {
                     get { strings }.isNotEmpty().size.isLessThan(11)
                     get { ints }.isNotEmpty().size.isLessThan(11)
                     get { longs }.isNotEmpty().size.isLessThan(11)
                     get { doubles }.isNotEmpty().size.isLessThan(11)
                     get { enums }.isNotEmpty().size.isLessThan(11)
+                }
+            }
+            test("collection size can be configured") {
+                val randolf = Randolf(RandolfConfig(maxCollectionSize = 100))
+                expectThat((0..10).map { randolf.create<ListDC>() }).all {
+                    get { strings }.isNotEmpty().size.isLessThan(101)
+                    get { ints }.isNotEmpty().size.isLessThan(101)
+                    get { longs }.isNotEmpty().size.isLessThan(101)
+                    get { doubles }.isNotEmpty().size.isLessThan(101)
+                    get { enums }.isNotEmpty().size.isLessThan(101)
                 }
             }
 
