@@ -6,7 +6,17 @@ import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
-import strikt.assertions.*
+import strikt.assertions.all
+import strikt.assertions.contains
+import strikt.assertions.hasLength
+import strikt.assertions.isEmpty
+import strikt.assertions.isEqualTo
+import strikt.assertions.isLessThan
+import strikt.assertions.isNotEmpty
+import strikt.assertions.isNotEqualTo
+import strikt.assertions.isNotNull
+import strikt.assertions.isNull
+import strikt.assertions.size
 import java.time.Instant
 
 class RandolfTest : JUnit5Minutests {
@@ -201,6 +211,10 @@ class RandolfTest : JUnit5Minutests {
                 expectThat(fixture.create<MapDC>()) {
                     get { map }.isEmpty()
                 }
+            }
+            test("sets not nullable properties to their default value") {
+                data class StringDC(val a: String = "string theory")
+                expectThat(fixture.create<StringDC>()).get { a }.isEqualTo("string theory")
             }
 
         }
