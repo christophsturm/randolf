@@ -7,12 +7,14 @@ import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
 data class RandolfConfig(
+    val random: Random = kotlin.random.Random,
     val stringLength: Int = 20,
     val minimal: Boolean = false,
     val customMappings: Map<KClass<*>, (type: KType, name: String) -> Any> = emptyMap()
 )
 
 class Randolf(val config: RandolfConfig = RandolfConfig()) {
+    val random = config.random
     companion object {
         // just ASCII for now, this could easily be made configurable
         private val STRING_CHARACTERS = ('A'..'Z').toList() + (('a'..'z').toList()).plus(' ').toTypedArray()
@@ -21,16 +23,16 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
     private val path = mutableSetOf<KClass<*>>()
 
     private val typeMappings = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
-        Int::class to { _, _ -> Random.nextInt() },
-        Double::class to { _, _ -> Random.nextDouble() },
-        Float::class to { _, _ -> Random.nextFloat() },
-        Long::class to { _, _ -> Random.nextLong() },
-        Short::class to { _, _ -> Random.nextInt().toShort() },
-        Byte::class to { _, _ -> Random.nextBytes(1).single() },
-        Boolean::class to { _, _ -> Random.nextBoolean() },
-        Char::class to { _, _ -> STRING_CHARACTERS.random() },
+        Int::class to { _, _ -> random.nextInt() },
+        Double::class to { _, _ -> random.nextDouble() },
+        Float::class to { _, _ -> random.nextFloat() },
+        Long::class to { _, _ -> random.nextLong() },
+        Short::class to { _, _ -> random.nextInt().toShort() },
+        Byte::class to { _, _ -> random.nextBytes(1).single() },
+        Boolean::class to { _, _ -> random.nextBoolean() },
+        Char::class to { _, _ -> STRING_CHARACTERS.random(random) },
         String::class to { _, _ ->
-            if (config.minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
+            if (config.minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random(random) }.joinToString(
                 ""
             )
         },
@@ -61,7 +63,7 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
         val parameterKClass = type.classifier as KClass<*>
         val isEnum = (type.javaType as? Class<*>)?.isEnum ?: false
         return if (isEnum) {
-            parameterKClass.java.enumConstants.random()
+            parameterKClass.java.enumConstants.random(random)
         } else {
             val mappingFunction = typeMappings[parameterKClass]
             mappingFunction?.invoke(type, parameterName) ?: create(parameterKClass, parameterName)
@@ -75,7 +77,7 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
             val arguments = type.arguments
             val keyType = arguments[0].type!!
             val valueType = arguments[1].type!!
-            (0..Random.nextInt(9) + 1).map {
+            (0..random.nextInt(9) + 1).map {
                 Pair(createValue(keyType, parameterName), createValue(valueType, parameterName))
             }.toMap()
         }
@@ -85,7 +87,7 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
         return if (config.minimal)
             emptyList()
         else
-            (0..Random.nextInt(9) + 1).mapTo(LinkedList()) {
+            (0..random.nextInt(9) + 1).mapTo(LinkedList()) {
                 createValue(type.arguments.single().type!!, parameterName)
             }
     }
