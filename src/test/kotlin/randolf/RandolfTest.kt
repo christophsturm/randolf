@@ -25,6 +25,8 @@ class RandolfTest : JUnit5Minutests {
 
     override val tests = rootContext<Randolf>(transform = skipAndFocus) {
         fixture { Randolf() }
+
+
         // not using the fixture in the test below to make it self contained for the readme
         test("how it looks and what it does") {
             data class Group(val name: String)
@@ -162,10 +164,6 @@ class RandolfTest : JUnit5Minutests {
 
         }
         context("configuration") {
-            test("string length is configurable") {
-                expectThat(Randolf(config = RandolfConfig(stringLength = 25)).create<StringDC>()).get { stringProperty }
-                    .hasLength(25)
-            }
             test("string length is configurable") {
                 expectThat(Randolf(config = RandolfConfig(stringLength = 25)).create<StringDC>()).get { stringProperty }
                     .hasLength(25)
