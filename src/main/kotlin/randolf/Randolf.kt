@@ -6,11 +6,10 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
-class Randolf private constructor(private val minimal: Boolean) {
-    companion object {
-        inline fun <reified T : Any> create(minimal: Boolean = false): T = create(T::class, minimal)
-        fun <T : Any> create(kClass: KClass<T>, minimal: Boolean = false): T = Randolf(minimal).create(kClass, "<root>")
+data class RandolfConfig(val stringLength: Int = 20)
 
+class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = RandolfConfig()) {
+    companion object {
         // just ASCII for now, this could easily be made configurable
         private val STRING_CHARACTERS = ('A'..'Z').toList() + (('a'..'z').toList()).plus(' ').toTypedArray()
     }
@@ -34,7 +33,7 @@ class Randolf private constructor(private val minimal: Boolean) {
 
     private fun createValue(type: KType, parameterName: String): Any {
         val parameterKClass = type.classifier as KClass<*>
-        val isEnum = type.javaType.let { it is Class<*> && it.isEnum }
+        val isEnum = (type.javaType as? Class<*>)?.isEnum ?: false
         return if (isEnum) {
             parameterKClass.java.enumConstants.random()
         } else when (parameterKClass) {
@@ -42,7 +41,9 @@ class Randolf private constructor(private val minimal: Boolean) {
             Collection::class -> makeList(type, parameterName)
             List::class -> makeList(type, parameterName)
             Set::class -> makeList(type, parameterName).toSet()
-            String::class -> if (minimal) "" else (1..20).map { STRING_CHARACTERS.random() }.joinToString("")
+            String::class -> if (minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
+                ""
+            )
             Int::class -> Random.nextInt()
             Long::class -> Random.nextLong()
             Double::class -> Random.nextDouble()
@@ -72,5 +73,8 @@ class Randolf private constructor(private val minimal: Boolean) {
             }
     }
 }
+
+inline fun <reified T : Any> Randolf.create(): T = this.create(T::class, "root")
+
 
 class RandolfException(message: String) : RuntimeException(message)
