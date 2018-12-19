@@ -7,6 +7,7 @@ import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.*
+import java.time.Instant
 
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
@@ -22,13 +23,13 @@ class RandolfTest : JUnit5Minutests {
         test("how it looks and what it does") {
             data class Group(val name: String)
             data class User(
-                val firstName: String,
-                val name: String,
-                val age: Int,
-                val lat: Double,
-                val lon: Double,
-                val favoriteCoffee: BeanType,
-                val groups: List<Group>
+                    val firstName: String,
+                    val name: String,
+                    val age: Int,
+                    val lat: Double,
+                    val lon: Double,
+                    val favoriteCoffee: BeanType,
+                    val groups: List<Group>
             )
             print(Randolf().create<User>())
             // => User(firstName=UVQyniDCPDuxYleOqVlx, name=xKQtkvybVJGeXHWUPBSE, age=12517728, lat=0.39825335948498386, long=0.1518043402275937, favoriteCoffee=ARABICA, groups=[Group(name=TCZRDtzVuKrDqrmjgdqS), Group(name= txATFFGAPTXTNBeuCcN), Group(name=EiMytHwslatclHMaCDig), Group(name=I DFdlkHxiXxwXMdjHYo), Group(name=wbhsAlk wPmZkLCkBCJe), Group(name=LwBn WbOrUHKojWjbYBU), Group(name=qZryMZSZMhjgGtYUWQHP), Group(name=QcfoKlV p akKYqrEXRG)])
@@ -57,7 +58,7 @@ class RandolfTest : JUnit5Minutests {
             data class EnumDC(val enumProperty: BeanType)
             // create 10 instances and check that not all of them are the same
             expectThat((1..10).map { fixture.create<EnumDC>() }.map { it.enumProperty }).contains(
-                BeanType.ROBUSTA, BeanType.ARABICA
+                    BeanType.ROBUSTA, BeanType.ARABICA
             )
         }
         test("initializes nested data classes") {
@@ -65,7 +66,7 @@ class RandolfTest : JUnit5Minutests {
             expectThat(fixture.create<DataClassDC>()).isNotEqualTo(fixture.create())
         }
         data class NullableFieldsDC(
-            val string: String?, val int: Int?, val long: Long?, val double: Double?, val enum: BeanType?
+                val string: String?, val int: Int?, val long: Long?, val double: Double?, val enum: BeanType?
         )
 
         test("also sets nullable fields") {
@@ -79,8 +80,8 @@ class RandolfTest : JUnit5Minutests {
         }
         context("collections support") {
             data class ListDC(
-                val strings: List<String>, val ints: List<Int>, val longs: List<Long>,
-                val doubles: List<Double>, val enums: List<BeanType>
+                    val strings: List<String>, val ints: List<Int>, val longs: List<Long>,
+                    val doubles: List<Double>, val enums: List<BeanType>
             )
             test("sets lists of supported  values") {
                 expectThat(fixture.create<ListDC>()).isNotEqualTo(fixture.create())
@@ -96,8 +97,8 @@ class RandolfTest : JUnit5Minutests {
             }
 
             data class SetDC(
-                val strings: Set<String>, val ints: Set<Int>, val longs: Set<Long>,
-                val doubles: Set<Double>, val enums: Set<BeanType>
+                    val strings: Set<String>, val ints: Set<Int>, val longs: Set<Long>,
+                    val doubles: Set<Double>, val enums: Set<BeanType>
             )
             test("sets sets of supported values") {
                 expectThat(fixture.create<SetDC>()).isNotEqualTo(fixture.create())
@@ -113,8 +114,8 @@ class RandolfTest : JUnit5Minutests {
             }
 
             data class CollectionDC(
-                val strings: Collection<String>, val ints: Collection<Int>, val longs: Collection<Long>,
-                val doubles: Collection<Double>, val enums: Collection<BeanType>
+                    val strings: Collection<String>, val ints: Collection<Int>, val longs: Collection<Long>,
+                    val doubles: Collection<Double>, val enums: Collection<BeanType>
             )
 
             test("sets lists of supported values") {
@@ -131,7 +132,7 @@ class RandolfTest : JUnit5Minutests {
             }
 
             data class MapDC(
-                val int2StringMap: Map<Int, String>
+                    val int2StringMap: Map<Int, String>
             )
             SKIP - test("sets maps of supported values") {
                 expectThat(fixture.create<MapDC>()).isNotEqualTo(fixture.create())
@@ -154,10 +155,20 @@ class RandolfTest : JUnit5Minutests {
             }
 
         }
+        context("custom mappings") {
+            data class DataClassWithInstant(val instant: Instant)
+            test("supports custom mappings") {
+                val now = Instant.now()
+                val config = RandolfConfig(customMappings = mapOf(Instant::class to { _, _ ->
+                    now
+                }))
+                expectThat(Randolf(config).create<DataClassWithInstant>()).get { instant }.isEqualTo(now)
+            }
+        }
         context("configuration") {
             test("string length is configurable") {
                 expectThat(Randolf(config = RandolfConfig(stringLength = 25)).create<StringDC>()).get { stringProperty }
-                    .hasLength(25)
+                        .hasLength(25)
             }
         }
         context("minimal mode") {

@@ -6,7 +6,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
-data class RandolfConfig(val stringLength: Int = 20, val minimal: Boolean = false)
+data class RandolfConfig(val stringLength: Int = 20,
+                         val minimal: Boolean = false,
+                         val customMappings: Map<KClass<*>, (type: KType, name: String) -> Any> = emptyMap())
 
 class Randolf(val config: RandolfConfig = RandolfConfig()) {
     companion object {
@@ -16,7 +18,7 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
 
     private val path = mutableSetOf<KClass<*>>()
 
-    private val defaultTypeMappings = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
+    private val typeMappings = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
             Int::class to { _, _ -> Random.nextInt() },
             Double::class to { _, _ -> Random.nextDouble() },
             Long::class to { _, _ -> Random.nextLong() },
@@ -29,7 +31,7 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
             List::class to { type, name -> makeList(type, name) },
             Set::class to { type, name -> makeList(type, name).toSet() },
             Collection::class to { type, name -> makeList(type, name) }
-    )
+    ).plus(config.customMappings)
 
     fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
         if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName with type ${kClass.simpleName}")
@@ -51,7 +53,7 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
         return if (isEnum) {
             parameterKClass.java.enumConstants.random()
         } else {
-            val mappingFunction = defaultTypeMappings[parameterKClass]
+            val mappingFunction = typeMappings[parameterKClass]
             mappingFunction?.invoke(type, parameterName) ?: create(parameterKClass, parameterName)
         }
     }
