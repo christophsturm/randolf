@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "com.christophsturm"
-version = "0.1.0"
+version = "0.2.0"
 
 repositories {
     //    maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap") }
@@ -72,7 +72,7 @@ publishing {
     }
 }
 
-// ./gradlew clean check publish bintrayUpload
+// BINTRAY_API_KEY= ... ./gradlew clean check publish bintrayUpload
 bintray {
     user = "christophsturm"
     key = System.getenv("BINTRAY_API_KEY")
