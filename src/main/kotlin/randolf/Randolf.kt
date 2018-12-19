@@ -10,16 +10,13 @@ data class RandolfConfig(
     val random: Random = kotlin.random.Random,
     val stringLength: Int = 20,
     val minimal: Boolean = false,
-    val customMappings: Map<KClass<*>, (type: KType, name: String) -> Any> = emptyMap()
+    val customMappings: Map<KClass<*>, (type: KType, name: String) -> Any> = emptyMap(),
+    val maxCollectionSize: Int = 10,
+    val stringCharacters: List<Char> = ('A'..'Z').toList() + (('a'..'z').toList()).plus(' ')
 )
 
 class Randolf(val config: RandolfConfig = RandolfConfig()) {
-    val random = config.random
-    companion object {
-        // just ASCII for now, this could easily be made configurable
-        private val STRING_CHARACTERS = ('A'..'Z').toList() + (('a'..'z').toList()).plus(' ').toTypedArray()
-    }
-
+    private val random = config.random
     private val path = mutableSetOf<KClass<*>>()
 
     private val typeMappings = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
@@ -30,9 +27,9 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
         Short::class to { _, _ -> random.nextInt().toShort() },
         Byte::class to { _, _ -> random.nextBytes(1).single() },
         Boolean::class to { _, _ -> random.nextBoolean() },
-        Char::class to { _, _ -> STRING_CHARACTERS.random(random) },
+        Char::class to { _, _ -> config.stringCharacters.random(random) },
         String::class to { _, _ ->
-            if (config.minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random(random) }.joinToString(
+            if (config.minimal) "" else (1..config.stringLength).map { config.stringCharacters.random(random) }.joinToString(
                 ""
             )
         },
@@ -77,7 +74,7 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
             val arguments = type.arguments
             val keyType = arguments[0].type!!
             val valueType = arguments[1].type!!
-            (0..random.nextInt(9) + 1).map {
+            (0..random.nextInt(config.maxCollectionSize - 1) + 1).map {
                 Pair(createValue(keyType, parameterName), createValue(valueType, parameterName))
             }.toMap()
         }
@@ -87,7 +84,7 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
         return if (config.minimal)
             emptyList()
         else
-            (0..random.nextInt(9) + 1).mapTo(LinkedList()) {
+            (0..random.nextInt(config.maxCollectionSize - 1) + 1).mapTo(LinkedList()) {
                 createValue(type.arguments.single().type!!, parameterName)
             }
     }
