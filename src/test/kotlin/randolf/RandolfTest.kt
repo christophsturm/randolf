@@ -6,7 +6,17 @@ import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
-import strikt.assertions.*
+import strikt.assertions.all
+import strikt.assertions.contains
+import strikt.assertions.hasLength
+import strikt.assertions.isEmpty
+import strikt.assertions.isEqualTo
+import strikt.assertions.isLessThan
+import strikt.assertions.isNotEmpty
+import strikt.assertions.isNotEqualTo
+import strikt.assertions.isNotNull
+import strikt.assertions.isNull
+import strikt.assertions.size
 import java.time.Instant
 
 class RandolfTest : JUnit5Minutests {
@@ -40,7 +50,6 @@ class RandolfTest : JUnit5Minutests {
             expectThat(firstInstance).get { stringProperty }.hasLength(20)
             expectThat(firstInstance).isNotEqualTo(fixture.create())
         }
-
         test("sets Integer properties to a random value") {
             data class IntegerDC(val integerProperty: Int)
             expectThat(fixture.create<IntegerDC>()).isNotEqualTo(fixture.create())
@@ -77,6 +86,10 @@ class RandolfTest : JUnit5Minutests {
                 get { double }.isNotNull()
                 get { enum }.isNotNull()
             }
+        }
+        test("does not use default values per default") {
+            data class StringWithDefaultDC(val stringProperty: String = "unused default")
+            expectThat(fixture.create<StringWithDefaultDC>()).get { stringProperty }.isNotEqualTo("unused default")
         }
         context("collections support") {
             data class ListDC(
@@ -200,6 +213,13 @@ class RandolfTest : JUnit5Minutests {
                 data class MapDC(val map: Map<String, String>)
                 expectThat(fixture.create<MapDC>()) {
                     get { map }.isEmpty()
+                }
+            }
+            test("sets not nullable properties to their default value") {
+                data class StringDC(val string: String = "string theory", val int: Int = 42)
+                expectThat(fixture.create<StringDC>()) {
+                    get { string }.isEqualTo("string theory")
+                    get { int }.isEqualTo(42)
                 }
             }
 
