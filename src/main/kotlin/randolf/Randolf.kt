@@ -6,9 +6,13 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
-data class RandolfConfig(val stringLength: Int = 20)
+data class RandolfConfig(
+    val stringLength: Int = 20,
+    val minimal: Boolean = false,
+    val customMappings: Map<KClass<*>, (type: KType, name: String) -> Any> = emptyMap()
+)
 
-class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = RandolfConfig()) {
+class Randolf(val config: RandolfConfig = RandolfConfig()) {
     companion object {
         // just ASCII for now, this could easily be made configurable
         private val STRING_CHARACTERS = ('A'..'Z').toList() + (('a'..'z').toList()).plus(' ').toTypedArray()
@@ -16,6 +20,20 @@ class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = 
 
     private val path = mutableSetOf<KClass<*>>()
 
+    private val typeMappings = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
+        Int::class to { _, _ -> Random.nextInt() },
+        Double::class to { _, _ -> Random.nextDouble() },
+        Long::class to { _, _ -> Random.nextLong() },
+        String::class to { _, _ ->
+            if (config.minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
+                ""
+            )
+        },
+        Map::class to { type, name -> makeMap(type, name) },
+        List::class to { type, name -> makeList(type, name) },
+        Set::class to { type, name -> makeList(type, name).toSet() },
+        Collection::class to { type, name -> makeList(type, name) }
+    ).plus(config.customMappings)
 
     fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
         if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName with type ${kClass.simpleName}")
@@ -23,7 +41,7 @@ class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = 
         val constructor = kClass.constructors.single()
         val parameters = constructor.parameters
         val parameterValues = parameters.map { parameter ->
-            if (minimal && parameter.type.isMarkedNullable) null
+            if (config.minimal && parameter.type.isMarkedNullable) null
             else
                 createValue(parameter.type, parameter.name!!)
         }
@@ -36,23 +54,14 @@ class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = 
         val isEnum = (type.javaType as? Class<*>)?.isEnum ?: false
         return if (isEnum) {
             parameterKClass.java.enumConstants.random()
-        } else when (parameterKClass) {
-            Map::class -> makeMap(type, parameterName)
-            Collection::class -> makeList(type, parameterName)
-            List::class -> makeList(type, parameterName)
-            Set::class -> makeList(type, parameterName).toSet()
-            String::class -> if (minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
-                ""
-            )
-            Int::class -> Random.nextInt()
-            Long::class -> Random.nextLong()
-            Double::class -> Random.nextDouble()
-            else -> create(parameterKClass, parameterName)
+        } else {
+            val mappingFunction = typeMappings[parameterKClass]
+            mappingFunction?.invoke(type, parameterName) ?: create(parameterKClass, parameterName)
         }
     }
 
     private fun makeMap(type: KType, parameterName: String): Map<Any, Any> {
-        return if (minimal)
+        return if (config.minimal)
             emptyMap()
         else {
             val arguments = type.arguments
@@ -65,7 +74,7 @@ class Randolf(private val minimal: Boolean = false, val config: RandolfConfig = 
     }
 
     private fun makeList(type: KType, parameterName: String): List<Any> {
-        return if (minimal)
+        return if (config.minimal)
             emptyList()
         else
             (0..Random.nextInt(9) + 1).mapTo(LinkedList()) {

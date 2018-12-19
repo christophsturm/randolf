@@ -6,16 +6,8 @@ import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
-import strikt.assertions.all
-import strikt.assertions.contains
-import strikt.assertions.hasLength
-import strikt.assertions.isEmpty
-import strikt.assertions.isLessThan
-import strikt.assertions.isNotEmpty
-import strikt.assertions.isNotEqualTo
-import strikt.assertions.isNotNull
-import strikt.assertions.isNull
-import strikt.assertions.size
+import strikt.assertions.*
+import java.time.Instant
 
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
@@ -163,6 +155,16 @@ class RandolfTest : JUnit5Minutests {
             }
 
         }
+        context("custom mappings") {
+            data class DataClassWithInstant(val instant: Instant)
+            test("supports custom mappings") {
+                val now = Instant.now()
+                val config = RandolfConfig(customMappings = mapOf(Instant::class to { _, _ ->
+                    now
+                }))
+                expectThat(Randolf(config).create<DataClassWithInstant>()).get { instant }.isEqualTo(now)
+            }
+        }
         context("configuration") {
             test("string length is configurable") {
                 expectThat(Randolf(config = RandolfConfig(stringLength = 25)).create<StringDC>()).get { stringProperty }
@@ -170,7 +172,7 @@ class RandolfTest : JUnit5Minutests {
             }
         }
         context("minimal mode") {
-            fixture { Randolf(minimal = true) }
+            fixture { Randolf(RandolfConfig(minimal = true)) }
 
             test("sets nullable properties to null") {
                 expectThat(fixture.create<NullableFieldsDC>()) {
