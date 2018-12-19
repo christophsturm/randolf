@@ -205,9 +205,10 @@ class RandolfTest : JUnit5Minutests {
                     .hasLength(25)
             }
             test("can configure random generator") {
-                expectThat(Randolf(RandolfConfig(random = Random(1234))).create<NullableFieldsDC>()).isEqualTo(
-                    Randolf(RandolfConfig(random = Random(1234))).create()
-                )
+                val initial = Randolf(RandolfConfig(random = Random(1234))).create<NullableFieldsDC>()
+                repeat(10) {
+                    expectThat(initial).isEqualTo(Randolf(RandolfConfig(random = Random(1234))).create())
+                }
 
             }
         }
