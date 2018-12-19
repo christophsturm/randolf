@@ -37,7 +37,7 @@ class RandolfTest : JUnit5Minutests {
                 val groups: List<Group>
             )
             print(Randolf().create<User>())
-            // => User(firstName=UVQyniDCPDuxYleOqVlx, name=xKQtkvybVJGeXHWUPBSE, age=12517728, lat=0.39825335948498386, long=0.1518043402275937, favoriteCoffee=ARABICA, groups=[Group(name=TCZRDtzVuKrDqrmjgdqS), Group(name= txATFFGAPTXTNBeuCcN), Group(name=EiMytHwslatclHMaCDig), Group(name=I DFdlkHxiXxwXMdjHYo), Group(name=wbhsAlk wPmZkLCkBCJe), Group(name=LwBn WbOrUHKojWjbYBU), Group(name=qZryMZSZMhjgGtYUWQHP), Group(name=QcfoKlV p akKYqrEXRG)])
+            // => User(firstName=QV muCLbUVfVheboeSuN, name=MSdOzpRCFIykprACOHjv, age=2116525025, lat=0.9518687079417872, lon=0.8331958938906572, isBoss=false, teamSize=4310, flags=83, shortName=Z, efficiency=0.76879007, favoriteCoffee=ARABICA, groups=[Group(name=TpiFXUrucFA cMARKLiR), Group(name=floFeNep XBEZUfXwQgL)])
         }
 
         test("sets string properties to 20 random characters") {
@@ -71,7 +71,8 @@ class RandolfTest : JUnit5Minutests {
             expectThat(fixture.create<DataClassDC>()).isNotEqualTo(fixture.create())
         }
         data class NullableFieldsDC(
-            val string: String?, val int: Int?, val long: Long?, val double: Double?, val enum: BeanType?
+            val string: String?, val int: Int?, val long: Long?, val double: Double?, val enum: BeanType?,
+            val byte: Byte?, val float: Float?, val short: Short?, val boolean: Boolean?, val char: Char?
         )
 
         test("also sets nullable fields") {
@@ -81,6 +82,11 @@ class RandolfTest : JUnit5Minutests {
                 get { long }.isNotNull()
                 get { double }.isNotNull()
                 get { enum }.isNotNull()
+                get { byte }.isNotNull()
+                get { float }.isNotNull()
+                get { short }.isNotNull()
+                get { boolean }.isNotNull()
+                get { char }.isNotNull()
             }
         }
         context("collections support") {
@@ -186,6 +192,11 @@ class RandolfTest : JUnit5Minutests {
                     get { long }.isNull()
                     get { double }.isNull()
                     get { enum }.isNull()
+                    get { byte }.isNull()
+                    get { float }.isNull()
+                    get { short }.isNull()
+                    get { boolean }.isNull()
+                    get { char }.isNull()
                 }
             }
 
