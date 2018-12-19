@@ -6,9 +6,11 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
-data class RandolfConfig(val stringLength: Int = 20,
-                         val minimal: Boolean = false,
-                         val customMappings: Map<KClass<*>, (type: KType, name: String) -> Any> = emptyMap())
+data class RandolfConfig(
+    val stringLength: Int = 20,
+    val minimal: Boolean = false,
+    val customMappings: Map<KClass<*>, (type: KType, name: String) -> Any> = emptyMap()
+)
 
 class Randolf(val config: RandolfConfig = RandolfConfig()) {
     companion object {
@@ -19,18 +21,18 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
     private val path = mutableSetOf<KClass<*>>()
 
     private val typeMappings = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
-            Int::class to { _, _ -> Random.nextInt() },
-            Double::class to { _, _ -> Random.nextDouble() },
-            Long::class to { _, _ -> Random.nextLong() },
-            String::class to { _, _ ->
-                if (config.minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
-                        ""
-                )
-            },
-            Map::class to { type, name -> makeMap(type, name) },
-            List::class to { type, name -> makeList(type, name) },
-            Set::class to { type, name -> makeList(type, name).toSet() },
-            Collection::class to { type, name -> makeList(type, name) }
+        Int::class to { _, _ -> Random.nextInt() },
+        Double::class to { _, _ -> Random.nextDouble() },
+        Long::class to { _, _ -> Random.nextLong() },
+        String::class to { _, _ ->
+            if (config.minimal) "" else (1..config.stringLength).map { STRING_CHARACTERS.random() }.joinToString(
+                ""
+            )
+        },
+        Map::class to { type, name -> makeMap(type, name) },
+        List::class to { type, name -> makeList(type, name) },
+        Set::class to { type, name -> makeList(type, name).toSet() },
+        Collection::class to { type, name -> makeList(type, name) }
     ).plus(config.customMappings)
 
     fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
