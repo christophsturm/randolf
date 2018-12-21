@@ -26,7 +26,7 @@ dependencies {
     compile(kotlin("stdlib-jdk8", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
     testImplementation("io.strikt:strikt-core:0.17.1")
-    testImplementation("com.oneeyedmen:minutest:0.33.0")
+    testImplementation("com.oneeyedmen:minutest:0.34.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")

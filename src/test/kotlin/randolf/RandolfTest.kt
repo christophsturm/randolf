@@ -1,12 +1,21 @@
 package randolf
 
-import com.oneeyedmen.minutest.experimental.SKIP
 import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
-import strikt.assertions.*
+import strikt.assertions.all
+import strikt.assertions.contains
+import strikt.assertions.hasLength
+import strikt.assertions.isEmpty
+import strikt.assertions.isEqualTo
+import strikt.assertions.isLessThan
+import strikt.assertions.isNotEmpty
+import strikt.assertions.isNotEqualTo
+import strikt.assertions.isNotNull
+import strikt.assertions.isNull
+import strikt.assertions.size
 import java.time.Instant
 import kotlin.random.Random
 
@@ -173,10 +182,10 @@ class RandolfTest : JUnit5Minutests {
             data class MapDC(
                 val int2StringMap: Map<Int, String>
             )
-            SKIP - test("sets maps of supported values") {
+            test("sets maps of supported values") {
                 expectThat(fixture.create<MapDC>()).isNotEqualTo(fixture.create())
             }
-            SKIP - test("maps have 1 to 10 entries") {
+            test("maps have 1 to 10 entries") {
                 expectThat((0..10).map { fixture.create<MapDC>() }).all {
                     get { int2StringMap.entries }.isNotEmpty().size.isLessThan(11)
                 }
