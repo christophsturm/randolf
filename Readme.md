@@ -28,7 +28,7 @@ print(Randolf().create<User>())
 ```
 
 # Usage:
-Add this to your gradle dependencies:
+Add this to your Gradle dependencies:
 
 ```
     testCompile("com.christophsturm:randolf:0.1.0")
@@ -42,7 +42,7 @@ repositories {
 }
 ```
 
-You can create any kotlin data class like in the example above. All fields will be set, even nullable fields.
+You can create any Kotlin data class like in the example above. All fields will be set, even nullable fields.
 You can chose to set only necessary fields by calling `Randolf.create(RandolfConfig(minimal=true))` instead.
 This will set all nullable fields to null, numbers to 0 and make strings, lists and maps empty.
 For more usage examples take a look at the [unit tests](src/test/kotlin/randolf/RandolfTest.kt).
@@ -68,15 +68,15 @@ Currently supported types:
 
 If you want to change defaults or support more types, you can pass a [RandolfConfig](src/main/kotlin/randolf/RandolfConfig.kt) to the Randolf constructor.
 
-here is a config that returns now for `Instant`:
+Here is a config that returns now for `Instant`:
 ```
 RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ -> Instant.now() }))
 ```
-you can also inject a random generator for example to set the seed. 
+You can also inject a random generator for example to set the seed. 
  
 Next steps:
-* add an optional non random mode inspired by [fakir](https://github.com/dmcg/fakir)
-* build for kotlin/js and kotlin/native. 
+* add an optional non random mode inspired by [Fakir](https://github.com/dmcg/fakir)
+* build for Kotlin/JS and Kotlin/Native. 
 
 [![Download](https://api.bintray.com/packages/christophsturm/maven/randolf/images/download.svg)](https://bintray.com/christophsturm/maven/randolf/_latestVersion)
 [![CircleCI](https://circleci.com/gh/christophsturm/randolf/tree/master.svg?style=svg)](https://circleci.com/gh/christophsturm/randolf/tree/master)
