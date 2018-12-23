@@ -1,5 +1,6 @@
 package randolf
 
+import com.oneeyedmen.minutest.experimental.SKIP
 import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
@@ -270,6 +271,14 @@ class RandolfTest : JUnit5Minutests {
                 }
             }
 
+
+        }
+        context("error handling") {
+            SKIP - test("outputs decent error messages") {
+                expectThrows<RandolfException> {
+                    Randolf().create(Nothing::class)
+                }
+            }
         }
     }
 }
