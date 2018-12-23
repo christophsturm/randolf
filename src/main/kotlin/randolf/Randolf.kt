@@ -1,25 +1,45 @@
 package randolf
 
 import java.util.*
-import kotlin.random.Random
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
-data class RandolfConfig(
-    val random: Random = kotlin.random.Random,
-    val stringLength: Int = 20,
-    val minimal: Boolean = false,
-    val customMappings: Map<KClass<*>, (type: KType, name: String) -> Any> = emptyMap(),
-    val maxCollectionSize: Int = 10,
-    val stringCharacters: List<Char> = ('A'..'Z').toList() + (('a'..'z').toList()).plus(' ')
-)
+
+/**
+ * reified shortcut for the Randolf.create method
+ * @see Randolf.create
+ */
+inline fun <reified T : Any> Randolf.create(): T = this.create(T::class)
 
 class Randolf(val config: RandolfConfig = RandolfConfig()) {
+
+    /**
+     * Instantiates a kotlin class by calling its constructor with random values
+     */
+    fun <T : Any> create(kClass: KClass<T>) = create(kClass, "root")
+
+    private fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
+        if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName with type ${kClass.simpleName}")
+        path.add(kClass)
+        val constructor = kClass.constructors.single()
+        val parameters = constructor.parameters
+        val parameterValues = parameters.mapNotNull { parameter ->
+            if (config.minimal && parameter.type.isMarkedNullable)
+                Pair(parameter, null)
+            else if (config.minimal && parameter.isOptional)
+                null
+            else
+                Pair(parameter, createValue(parameter.type, parameter.name!!))
+        }.toMap()
+        path.remove(kClass)
+        return constructor.callBy(parameterValues)
+    }
+
     private val random = config.random
     private val path = mutableSetOf<KClass<*>>()
 
-    private val typeMappings = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
+    private val valueCreators = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
         Int::class to { _, _ -> random.nextInt() },
         Double::class to { _, _ -> random.nextDouble() },
         Float::class to { _, _ -> random.nextFloat() },
@@ -37,24 +57,8 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
         List::class to { type, name -> makeList(type, name) },
         Set::class to { type, name -> makeList(type, name).toSet() },
         Collection::class to { type, name -> makeList(type, name) }
-    ).plus(config.customMappings)
+    ).plus(config.additionalValueCreators)
 
-    fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
-        if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName with type ${kClass.simpleName}")
-        path.add(kClass)
-        val constructor = kClass.constructors.single()
-        val parameters = constructor.parameters
-        val parameterValues = parameters.mapNotNull { parameter ->
-            if (config.minimal && parameter.type.isMarkedNullable)
-                Pair(parameter, null)
-            else if (config.minimal && parameter.isOptional)
-                null
-            else
-                Pair(parameter, createValue(parameter.type, parameter.name!!))
-        }.toMap()
-        path.remove(kClass)
-        return constructor.callBy(parameterValues)
-    }
 
     private fun createValue(type: KType, parameterName: String): Any {
         val parameterKClass = type.classifier as KClass<*>
@@ -62,8 +66,8 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
         return if (isEnum) {
             parameterKClass.java.enumConstants.random(random)
         } else {
-            val mappingFunction = typeMappings[parameterKClass]
-            mappingFunction?.invoke(type, parameterName) ?: create(parameterKClass, parameterName)
+            val valueCreator = valueCreators[parameterKClass]
+            valueCreator?.invoke(type, parameterName) ?: create(parameterKClass, parameterName)
         }
     }
 
@@ -90,7 +94,6 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
     }
 }
 
-inline fun <reified T : Any> Randolf.create(): T = this.create(T::class, "root")
 
 
 class RandolfException(message: String) : RuntimeException(message)

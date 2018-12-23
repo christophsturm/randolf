@@ -28,13 +28,13 @@ print(Randolf().create<User>())
 ```
 
 # Usage:
-Add this to your gradle file's dependency block:
+Add this to your Gradle dependencies:
 
 ```
     testCompile("com.christophsturm:randolf:0.1.0")
 ```
 
-Add jcenter if you haven't already:
+Add JCenter if you haven't already:
 
 ```
 repositories {
@@ -42,10 +42,10 @@ repositories {
 }
 ```
 
-You can create any kotlin data class like in the example above. All fields will be set, even nullable fields.
-You can select to set only fields that are absolutely necessary by calling `Randolf.create(minimal=true)` instead.
-Minimal mode will set all nullable fields to null, numbers to 0 and make strings, lists and maps empty.
-For more usage examples just take a look at the [unit tests](src/test/kotlin/randolf/RandolfTest.kt).
+You can create any Kotlin data class like in the example above. All fields will be set, even nullable fields.
+You can chose to set only necessary fields by calling `Randolf.create(RandolfConfig(minimal=true))` instead.
+This will set all nullable fields to null, numbers to 0 and make strings, lists and maps empty.
+For more usage examples take a look at the [unit tests](src/test/kotlin/randolf/RandolfTest.kt).
 
 
 Currently supported types:
@@ -64,9 +64,28 @@ Currently supported types:
 * Collection
 * Map
 
+# Configuration
+
+If you want to change defaults or support more types, you can pass a [RandolfConfig](src/main/kotlin/randolf/RandolfConfig.kt) to the Randolf constructor.
+
+Here is a config that returns now for `Instant`:
+```
+RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ -> Instant.now() }))
+```
+You can override supported types, and use the name and type of the field:
+```
+RandolfConfig(additionalValueCreators = mapOf(String::class to { type: KType, name: String ->
+                    "field $name of type $type"
+                }))
+```
+You can also inject a random generator for example to set the seed: 
+```
+RandolfConfig(random = Random(1234))
+```
+ 
 Next steps:
-* add an optional non random mode inspired by [fakir](https://github.com/dmcg/fakir)
-* build for kotlin/js and kotlin/native. 
+* add an optional non random mode inspired by [Fakir](https://github.com/dmcg/fakir)
+* build for Kotlin/JS and Kotlin/Native. 
 
 [![Download](https://api.bintray.com/packages/christophsturm/maven/randolf/images/download.svg)](https://bintray.com/christophsturm/maven/randolf/_latestVersion)
 [![CircleCI](https://circleci.com/gh/christophsturm/randolf/tree/master.svg?style=svg)](https://circleci.com/gh/christophsturm/randolf/tree/master)

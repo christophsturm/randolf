@@ -5,19 +5,10 @@ import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
-import strikt.assertions.all
-import strikt.assertions.contains
-import strikt.assertions.hasLength
-import strikt.assertions.isEmpty
-import strikt.assertions.isEqualTo
-import strikt.assertions.isLessThan
-import strikt.assertions.isNotEmpty
-import strikt.assertions.isNotEqualTo
-import strikt.assertions.isNotNull
-import strikt.assertions.isNull
-import strikt.assertions.size
+import strikt.assertions.*
 import java.time.Instant
 import kotlin.random.Random
+import kotlin.reflect.KType
 
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
@@ -65,7 +56,7 @@ class RandolfTest : JUnit5Minutests {
             expectThat(firstInstance).isNotEqualTo(fixture.create())
         }
         test("list of characters to choose from can be configured") {
-            val randolf = Randolf(RandolfConfig(stringCharacters = listOf('a'), stringLength = 5))
+            val randolf = Randolf(RandolfConfig(stringLength = 5, stringCharacters = listOf('a')))
             val firstInstance = randolf.create<StringDC>()
             expectThat(firstInstance).get { stringProperty }.isEqualTo("aaaaa")
         }
@@ -203,14 +194,23 @@ class RandolfTest : JUnit5Minutests {
             }
 
         }
-        context("custom mappings") {
+        context("custom types") {
             data class DataClassWithInstant(val instant: Instant)
-            test("supports custom mappings") {
+            test("supports additional value creators for custom types") {
                 val now = Instant.now()
-                val config = RandolfConfig(customMappings = mapOf(Instant::class to { _, _ ->
+                val config = RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ ->
                     now
                 }))
                 expectThat(Randolf(config).create<DataClassWithInstant>()).get { instant }.isEqualTo(now)
+            }
+            test("can override creators for internal types") {
+                val config =
+                    RandolfConfig(additionalValueCreators = mapOf(String::class to { type: KType, name: String ->
+                        "field $name of type $type"
+                    }))
+                expectThat(Randolf(config).create<StringDC>()).get { stringProperty }
+                    .isEqualTo("field stringProperty of type kotlin.String")
+
             }
         }
         context("configuration") {
