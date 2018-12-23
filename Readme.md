@@ -72,7 +72,7 @@ Here is a config that returns now for `Instant`:
 ```
 RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ -> Instant.now() }))
 ```
-or a more complex example that overrides how strings are created
+You can override supported types, and use the name and type of the field:
 ```
 RandolfConfig(additionalValueCreators = mapOf(String::class to { type: KType, name: String ->
                     "field $name of type $type"
