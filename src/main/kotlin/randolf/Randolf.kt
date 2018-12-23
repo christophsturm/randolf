@@ -21,9 +21,10 @@ class Randolf(private val config: RandolfConfig = RandolfConfig()) {
     fun <T : Any> create(kClass: KClass<T>) = create(kClass, "root")
 
     private fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
-        if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName with type ${kClass.simpleName}")
+        if (path.contains(kClass)) throw RandolfException("Recursion detected when trying to set property $propertyName of type ${kClass.simpleName}")
         path.add(kClass)
-        val constructor = kClass.constructors.single { it.visibility == KVisibility.PUBLIC }
+        val constructor = kClass.constructors.singleOrNull { it.visibility == KVisibility.PUBLIC }
+            ?: throw RandolfException("No public constructor found when trying to set property $propertyName of type ${kClass.simpleName}")
         val parameters = constructor.parameters
         val parameterValues = parameters.mapNotNull { parameter ->
             if (config.minimal && parameter.type.isMarkedNullable)

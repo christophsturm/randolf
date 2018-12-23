@@ -1,6 +1,5 @@
 package randolf
 
-import com.oneeyedmen.minutest.experimental.SKIP
 import com.oneeyedmen.minutest.experimental.skipAndFocus
 import com.oneeyedmen.minutest.junit.JUnit5Minutests
 import com.oneeyedmen.minutest.rootContext
@@ -183,18 +182,6 @@ class RandolfTest : JUnit5Minutests {
                 }
             }
         }
-        test("detects dependency loops") {
-            data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
-            expectThrows<RandolfException> {
-                fixture.create<DataClassThatReferencesItself>()
-            }.get { message }.isNotNull().and {
-                contains("recursion ")
-                contains("detected ")
-                contains("recursiveField ")
-                contains(" DataClassThatReferencesItself")
-            }
-
-        }
         context("custom types") {
             data class DataClassWithInstant(val instant: Instant)
             test("supports additional value creators for custom types") {
@@ -282,9 +269,28 @@ class RandolfTest : JUnit5Minutests {
             }
         }
         context("error handling") {
-            SKIP - test("outputs decent error message when there is no public constructor") {
+            test("detects dependency loops") {
+                data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
+                expectThrows<RandolfException> {
+                    fixture.create<DataClassThatReferencesItself>()
+                }.get { message }.isNotNull().and {
+                    contains("Recursion ")
+                    contains("detected ")
+                    contains("recursiveField ")
+                    contains(" DataClassThatReferencesItself")
+                }
+
+            }
+
+
+            test("outputs decent error message when there is no public constructor") {
                 expectThrows<RandolfException> {
                     Randolf().create(Nothing::class)
+                }.message.and {
+                    contains(" Void")
+                    contains("No public constructor ")
+
+
                 }
             }
         }
