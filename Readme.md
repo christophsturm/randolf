@@ -28,7 +28,7 @@ print(Randolf().create<User>())
 ```
 
 # Usage:
-Add this to your gradle file's dependencies:
+Add this to your gradle dependencies:
 
 ```
     testCompile("com.christophsturm:randolf:0.1.0")
@@ -43,9 +43,9 @@ repositories {
 ```
 
 You can create any kotlin data class like in the example above. All fields will be set, even nullable fields.
-You can select to set only fields that are absolutely necessary by calling `Randolf.create(RandolfConfig(minimal=true))` instead.
-Minimal mode will set all nullable fields to null, numbers to 0 and make strings, lists and maps empty.
-For more usage examples just take a look at the [unit tests](src/test/kotlin/randolf/RandolfTest.kt).
+You can chose to set only necessary fields by calling `Randolf.create(RandolfConfig(minimal=true))` instead.
+This will set all nullable fields to null, numbers to 0 and make strings, lists and maps empty.
+For more usage examples take a look at the [unit tests](src/test/kotlin/randolf/RandolfTest.kt).
 
 
 Currently supported types:
