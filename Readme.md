@@ -43,7 +43,7 @@ repositories {
 ```
 
 You can create any kotlin data class like in the example above. All fields will be set, even nullable fields.
-You can select to set only fields that are absolutely necessary by calling `Randolf.create(minimal=true)` instead.
+You can select to set only fields that are absolutely necessary by calling `Randolf.create(RandolfConfig(minimal=true))` instead.
 Minimal mode will set all nullable fields to null, numbers to 0 and make strings, lists and maps empty.
 For more usage examples just take a look at the [unit tests](src/test/kotlin/randolf/RandolfTest.kt).
 
@@ -64,6 +64,15 @@ Currently supported types:
 * Collection
 * Map
 
+# Configuration
+
+If you want to change defaults or support more types, you can pass a [RandolfConfig](src/main/kotlin/randolf/RandolfConfig.kt) to the Randolf constructor.
+
+here is a config that returns now for `Instant`:
+```
+RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ -> now }))
+```
+ 
 Next steps:
 * add an optional non random mode inspired by [fakir](https://github.com/dmcg/fakir)
 * build for kotlin/js and kotlin/native. 

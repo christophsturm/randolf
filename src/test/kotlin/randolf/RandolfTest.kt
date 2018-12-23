@@ -193,9 +193,9 @@ class RandolfTest : JUnit5Minutests {
             }
 
         }
-        context("custom mappings") {
+        context("custom types") {
             data class DataClassWithInstant(val instant: Instant)
-            test("supports custom mappings") {
+            test("supports additional value creators for custom types") {
                 val now = Instant.now()
                 val config = RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ ->
                     now
