@@ -6,6 +6,12 @@ import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
 
+/**
+ * reified shortcut for the Randolf.create method
+ * @see Randolf.create
+ */
+inline fun <reified T : Any> Randolf.create(): T = this.create(T::class)
+
 class Randolf(val config: RandolfConfig = RandolfConfig()) {
 
     /**
@@ -88,11 +94,6 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
     }
 }
 
-/**
- * infix shortcut for the Randolf.create method
- * @see Randolf.create
- */
-inline fun <reified T : Any> Randolf.create(): T = this.create(T::class)
 
 
 class RandolfException(message: String) : RuntimeException(message)
