@@ -72,6 +72,12 @@ Here is a config that returns now for `Instant`:
 ```
 RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ -> Instant.now() }))
 ```
+or a more complex example that overrides how strings are created
+```
+RandolfConfig(additionalValueCreators = mapOf(String::class to { type: KType, name: String ->
+                    "field $name of type $type"
+                }))
+```
 You can also inject a random generator for example to set the seed. 
  
 Next steps:

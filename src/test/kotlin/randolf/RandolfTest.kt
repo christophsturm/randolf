@@ -8,6 +8,7 @@ import strikt.api.expectThrows
 import strikt.assertions.*
 import java.time.Instant
 import kotlin.random.Random
+import kotlin.reflect.KType
 
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
@@ -201,6 +202,15 @@ class RandolfTest : JUnit5Minutests {
                     now
                 }))
                 expectThat(Randolf(config).create<DataClassWithInstant>()).get { instant }.isEqualTo(now)
+            }
+            test("can override creators for internal types") {
+                val config =
+                    RandolfConfig(additionalValueCreators = mapOf(String::class to { type: KType, name: String ->
+                        "field $name of type $type"
+                    }))
+                expectThat(Randolf(config).create<StringDC>()).get { stringProperty }
+                    .isEqualTo("field stringProperty of type kotlin.String")
+
             }
         }
         context("configuration") {
