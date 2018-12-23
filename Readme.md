@@ -70,7 +70,7 @@ If you want to change defaults or support more types, you can pass a [RandolfCon
 
 here is a config that returns now for `Instant`:
 ```
-RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ -> now }))
+RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ -> Instant.now() }))
 ```
 you can also inject a random generator for example to set the seed. 
  
