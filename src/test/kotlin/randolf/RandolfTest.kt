@@ -182,18 +182,6 @@ class RandolfTest : JUnit5Minutests {
                 }
             }
         }
-        test("detects dependency loops") {
-            data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
-            expectThrows<RandolfException> {
-                fixture.create<DataClassThatReferencesItself>()
-            }.get { message }.isNotNull().and {
-                contains("recursion ")
-                contains("detected ")
-                contains("recursiveField ")
-                contains(" DataClassThatReferencesItself")
-            }
-
-        }
         context("custom types") {
             data class DataClassWithInstant(val instant: Instant)
             test("supports additional value creators for custom types") {
@@ -270,6 +258,41 @@ class RandolfTest : JUnit5Minutests {
                 }
             }
 
+
+        }
+        context("constructor selection") {
+            test("uses the public constructor") {
+                class DataClassWithPrivatePrimaryConstructor private constructor(val string: String) {
+                    constructor(int: Int) : this(int.toString())
+                }
+                Randolf().create<DataClassWithPrivatePrimaryConstructor>()
+            }
+        }
+        context("error handling") {
+            test("detects dependency loops") {
+                data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
+                expectThrows<RandolfException> {
+                    fixture.create<DataClassThatReferencesItself>()
+                }.get { message }.isNotNull().and {
+                    contains("Recursion ")
+                    contains("detected ")
+                    contains("recursiveField ")
+                    contains(" DataClassThatReferencesItself")
+                }
+
+            }
+
+
+            test("outputs decent error message when there is no public constructor") {
+                expectThrows<RandolfException> {
+                    Randolf().create(Nothing::class)
+                }.message.and {
+                    contains(" Void")
+                    contains("No public constructor ")
+
+
+                }
+            }
         }
     }
 }

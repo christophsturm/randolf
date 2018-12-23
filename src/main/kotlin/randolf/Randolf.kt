@@ -3,6 +3,7 @@ package randolf
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.KVisibility
 import kotlin.reflect.jvm.javaType
 
 
@@ -12,7 +13,7 @@ import kotlin.reflect.jvm.javaType
  */
 inline fun <reified T : Any> Randolf.create(): T = this.create(T::class)
 
-class Randolf(val config: RandolfConfig = RandolfConfig()) {
+class Randolf(private val config: RandolfConfig = RandolfConfig()) {
 
     /**
      * Instantiates a kotlin class by calling its constructor with random values
@@ -20,9 +21,10 @@ class Randolf(val config: RandolfConfig = RandolfConfig()) {
     fun <T : Any> create(kClass: KClass<T>) = create(kClass, "root")
 
     private fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
-        if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName with type ${kClass.simpleName}")
+        if (path.contains(kClass)) throw RandolfException("Recursion detected when trying to set property $propertyName of type ${kClass.simpleName}")
         path.add(kClass)
-        val constructor = kClass.constructors.single()
+        val constructor = kClass.constructors.singleOrNull { it.visibility == KVisibility.PUBLIC }
+            ?: throw RandolfException("No public constructor found when trying to set property $propertyName of type ${kClass.simpleName}")
         val parameters = constructor.parameters
         val parameterValues = parameters.mapNotNull { parameter ->
             if (config.minimal && parameter.type.isMarkedNullable)
