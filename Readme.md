@@ -28,7 +28,7 @@ print(Randolf().create<User>())
 ```
 
 # Usage:
-Add this to your gradle file's dependency block:
+Add this to your gradle file's dependencies:
 
 ```
     testCompile("com.christophsturm:randolf:0.1.0")
@@ -72,6 +72,7 @@ here is a config that returns now for `Instant`:
 ```
 RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ -> now }))
 ```
+you can also inject a random generator for example to set the seed. 
  
 Next steps:
 * add an optional non random mode inspired by [fakir](https://github.com/dmcg/fakir)
