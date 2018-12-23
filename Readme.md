@@ -78,7 +78,10 @@ RandolfConfig(additionalValueCreators = mapOf(String::class to { type: KType, na
                     "field $name of type $type"
                 }))
 ```
-You can also inject a random generator for example to set the seed. 
+You can also inject a random generator for example to set the seed: 
+```
+RandolfConfig(random = Random(1234))
+```
  
 Next steps:
 * add an optional non random mode inspired by [Fakir](https://github.com/dmcg/fakir)
