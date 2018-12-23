@@ -273,8 +273,16 @@ class RandolfTest : JUnit5Minutests {
 
 
         }
+        context("constructor selection") {
+            test("uses the public constructor") {
+                class DataClassWithPrivatePrimaryConstructor private constructor(val string: String) {
+                    constructor(int: Int) : this(int.toString())
+                }
+                Randolf().create<DataClassWithPrivatePrimaryConstructor>()
+            }
+        }
         context("error handling") {
-            SKIP - test("outputs decent error messages") {
+            SKIP - test("outputs decent error message when there is no public constructor") {
                 expectThrows<RandolfException> {
                     Randolf().create(Nothing::class)
                 }
