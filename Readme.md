@@ -34,7 +34,7 @@ Add this to your Gradle dependencies:
     testCompile("com.christophsturm:randolf:0.1.0")
 ```
 
-Add jcenter if you haven't already:
+Add JCenter if you haven't already:
 
 ```
 repositories {
