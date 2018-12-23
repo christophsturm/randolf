@@ -9,9 +9,11 @@ import kotlin.reflect.jvm.javaType
 class Randolf(val config: RandolfConfig = RandolfConfig()) {
 
     /**
-     * Instantiates a kotlin class by calling its single constructor with random values
+     * Instantiates a kotlin class by calling its constructor with random values
      */
-    fun <T : Any> create(kClass: KClass<T>, propertyName: String = "root"): T {
+    fun <T : Any> create(kClass: KClass<T>) = create(kClass, "root")
+
+    private fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
         if (path.contains(kClass)) throw RandolfException("recursion detected when trying to set property $propertyName with type ${kClass.simpleName}")
         path.add(kClass)
         val constructor = kClass.constructors.single()
