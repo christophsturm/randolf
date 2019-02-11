@@ -42,7 +42,8 @@ repositories {
 }
 ```
 
-You can create any Kotlin data class like in the example above. All fields will be set, even nullable fields.
+You can create any Kotlin data class like in the example above. All fields will be set to random values,
+even nullable fields.
 You can chose to set only necessary fields by calling `Randolf.create(RandolfConfig(minimal=true))` instead.
 This will set all nullable fields to null, numbers to 0 and make strings, lists and maps empty.
 For more usage examples take a look at the [unit tests](src/test/kotlin/randolf/RandolfTest.kt).
