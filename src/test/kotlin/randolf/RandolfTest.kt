@@ -1,8 +1,7 @@
 package randolf
 
-import com.oneeyedmen.minutest.experimental.skipAndFocus
-import com.oneeyedmen.minutest.junit.JUnit5Minutests
-import com.oneeyedmen.minutest.rootContext
+import dev.minutest.junit.JUnit5Minutests
+import dev.minutest.rootContext
 import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.*
@@ -25,7 +24,7 @@ class RandolfTest : JUnit5Minutests {
 
     enum class BeanType { ROBUSTA, ARABICA }
 
-    override val tests = rootContext<Randolf>(transform = skipAndFocus) {
+    fun tests() = rootContext<Randolf>() {
         fixture { Randolf() }
 
 

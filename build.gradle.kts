@@ -1,13 +1,13 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junit5Version = "5.3.2"
-val junitPlatformVersion = "1.3.2"
-val kotlinVersion = "1.3.11"
+val junit5Version = "5.4.0"
+val junitPlatformVersion = "1.4.0"
+val kotlinVersion = "1.3.21"
 
 plugins {
     java
-    kotlin("jvm") version "1.3.11"
+    kotlin("jvm") version "1.3.21"
     id("com.github.ben-manes.versions") version "0.20.0"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.4"
@@ -25,8 +25,8 @@ repositories {
 dependencies {
     compile(kotlin("stdlib-jdk8", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
-    testImplementation("io.strikt:strikt-core:0.17.1")
-    testImplementation("com.oneeyedmen:minutest:0.34.0")
+    testImplementation("io.strikt:strikt-core:0.17.2")
+    testImplementation("dev.minutest:minutest:0.46.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
