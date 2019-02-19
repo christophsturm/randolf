@@ -26,7 +26,7 @@ dependencies {
     compile(kotlin("stdlib-jdk8", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
     testImplementation("io.strikt:strikt-core:0.17.2")
-    testImplementation("dev.minutest:minutest:0.46.0")
+    testImplementation("dev.minutest:minutest:1.2.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
@@ -51,7 +51,7 @@ tasks {
     }
     create<Jar>("sourceJar") {
         from(sourceSets.main.get().allSource)
-        classifier = "sources"
+        archiveClassifier.set("sources")
     }
 }
 
