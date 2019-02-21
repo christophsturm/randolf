@@ -1,4 +1,5 @@
 import com.jfrog.bintray.gradle.BintrayExtension
+import info.solidsoft.gradle.pitest.PitestPluginExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junit5Version = "5.4.0"
@@ -11,10 +12,20 @@ plugins {
     id("com.github.ben-manes.versions") version "0.20.0"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.4"
+    id("info.solidsoft.pitest") version "1.4.0"
+
 }
 
 group = "com.christophsturm"
 version = "0.2.0"
+
+buildscript {
+    configurations.maybeCreate("pitest")
+    dependencies {
+        "pitest"("org.pitest:pitest-junit5-plugin:0.8")
+    }
+}
+
 
 repositories {
     //    maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap") }
@@ -87,3 +98,17 @@ bintray {
     })
 }
 
+plugins.withId("info.solidsoft.pitest") {
+    configure<PitestPluginExtension> {
+        jvmArgs = listOf("-Xmx512m")
+        testPlugin = "junit5"
+        avoidCallsTo = setOf("kotlin.jvm.internal")
+        mutators = setOf("NEW_DEFAULTS")
+        targetClasses = setOf("randolf.*")  //by default "${project.group}.*"
+        targetTests = setOf("randolf.*")
+        pitestVersion = "1.4.5"
+        threads = System.getenv("PITEST_THREADS")?.toInt() ?:
+                Runtime.getRuntime().availableProcessors()
+        outputFormats = setOf("XML", "HTML")
+    }
+}
