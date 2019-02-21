@@ -24,7 +24,8 @@ class RandolfTest : JUnit5Minutests {
 
     enum class BeanType { ROBUSTA, ARABICA }
 
-    fun tests() = rootContext<Randolf>() {
+    @Suppress("unused")
+    fun tests() = rootContext<Randolf> {
         fixture { Randolf() }
 
 
@@ -207,8 +208,23 @@ class RandolfTest : JUnit5Minutests {
             }
             test("can configure random generator") {
                 val initial = Randolf(RandolfConfig(random = Random(1234))).create<NullableFieldsDC>()
-                repeat(10) {
+                repeat(2) {
                     expectThat(initial).isEqualTo(Randolf(RandolfConfig(random = Random(1234))).create())
+                }
+                repeat(2) {
+                    val new = Randolf(RandolfConfig(random = Random(1236))).create<NullableFieldsDC>()
+                    expectThat(initial) {
+                        get { string }.isNotEqualTo(new.string)
+                        get { int }.isNotEqualTo(new.int)
+                        get { long }.isNotEqualTo(new.long)
+                        get { double }.isNotEqualTo(new.double)
+                        get { enum }.isNotEqualTo(new.enum)
+                        get { byte }.isNotEqualTo(new.byte)
+                        get { float }.isNotEqualTo(new.float)
+                        get { short }.isNotEqualTo(new.short)
+                        get { boolean }.isNotEqualTo(new.boolean)
+                        get { char }.isNotEqualTo(new.char)
+                    }
                 }
 
             }
@@ -262,6 +278,7 @@ class RandolfTest : JUnit5Minutests {
         context("constructor selection") {
             test("uses the public constructor") {
                 class DataClassWithPrivatePrimaryConstructor private constructor(val string: String) {
+                    @Suppress("unused")
                     constructor(int: Int) : this(int.toString())
                 }
                 Randolf().create<DataClassWithPrivatePrimaryConstructor>()
