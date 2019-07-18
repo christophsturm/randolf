@@ -2,14 +2,14 @@ import com.jfrog.bintray.gradle.BintrayExtension
 import info.solidsoft.gradle.pitest.PitestPluginExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junit5Version = "5.4.0"
-val junitPlatformVersion = "1.4.0"
-val kotlinVersion = "1.3.21"
+val junit5Version = "5.5.0"
+val junitPlatformVersion = "1.5.0"
+val kotlinVersion = "1.3.41"
 
 plugins {
     java
-    kotlin("jvm") version "1.3.21"
-    id("com.github.ben-manes.versions") version "0.20.0"
+    kotlin("jvm") version "1.3.41"
+    id("com.github.ben-manes.versions") version "0.21.0"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.4"
     id("info.solidsoft.pitest") version "1.4.0"
@@ -22,7 +22,7 @@ version = "0.2.0"
 buildscript {
     configurations.maybeCreate("pitest")
     dependencies {
-        "pitest"("org.pitest:pitest-junit5-plugin:0.8")
+        "pitest"("org.pitest:pitest-junit5-plugin:0.9")
     }
 }
 
@@ -36,8 +36,8 @@ repositories {
 dependencies {
     compile(kotlin("stdlib-jdk8", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
-    testImplementation("io.strikt:strikt-core:0.17.2")
-    testImplementation("dev.minutest:minutest:1.2.0")
+    testImplementation("io.strikt:strikt-core:0.21.1")
+    testImplementation("dev.minutest:minutest:1.7.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
@@ -106,7 +106,7 @@ plugins.withId("info.solidsoft.pitest") {
         mutators = setOf("NEW_DEFAULTS")
         targetClasses = setOf("randolf.*")  //by default "${project.group}.*"
         targetTests = setOf("randolf.*")
-        pitestVersion = "1.4.5"
+        pitestVersion = "1.4.9"
         threads = System.getenv("PITEST_THREADS")?.toInt() ?:
                 Runtime.getRuntime().availableProcessors()
         outputFormats = setOf("XML", "HTML")

@@ -286,6 +286,7 @@ class RandolfTest : JUnit5Minutests {
         }
         context("error handling") {
             test("detects dependency loops") {
+                @Suppress("SelfReferenceConstructorParameter")
                 data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
                 expectThrows<RandolfException> {
                     fixture.create<DataClassThatReferencesItself>()
@@ -301,8 +302,9 @@ class RandolfTest : JUnit5Minutests {
 
             test("outputs decent error message when there is no public constructor") {
                 expectThrows<RandolfException> {
+                    @Suppress("IMPLICIT_NOTHING_AS_TYPE_PARAMETER")
                     Randolf().create(Nothing::class)
-                }.message.and {
+                }.message.isNotNull().and {
                     contains(" Void")
                     contains("No public constructor ")
 
