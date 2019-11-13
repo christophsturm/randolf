@@ -3,8 +3,8 @@ import com.jfrog.bintray.gradle.BintrayExtension
 import info.solidsoft.gradle.pitest.PitestPluginExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junit5Version = "5.5.1"
-val junitPlatformVersion = "1.5.1"
+val junit5Version = "5.5.2"
+val junitPlatformVersion = "1.5.2"
 val kotlinVersion = "1.3.50"
 
 plugins {
