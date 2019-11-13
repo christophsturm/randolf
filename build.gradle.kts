@@ -13,7 +13,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.27.0"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.4"
-    id("info.solidsoft.pitest") version "1.4.0"
+    id("info.solidsoft.pitest") version "1.4.5"
 
 }
 
@@ -23,7 +23,7 @@ version = "0.2.0"
 buildscript {
     configurations.maybeCreate("pitest")
     dependencies {
-        "pitest"("org.pitest:pitest-junit5-plugin:0.9")
+        "pitest"("org.pitest:pitest-junit5-plugin:0.10")
     }
 }
 
@@ -101,16 +101,16 @@ bintray {
 
 plugins.withId("info.solidsoft.pitest") {
     configure<PitestPluginExtension> {
-        jvmArgs = listOf("-Xmx512m")
-        testPlugin = "junit5"
-        avoidCallsTo = setOf("kotlin.jvm.internal")
-        mutators = setOf("NEW_DEFAULTS")
-        targetClasses = setOf("randolf.*")  //by default "${project.group}.*"
-        targetTests = setOf("randolf.*")
-        pitestVersion = "1.4.9"
-        threads = System.getenv("PITEST_THREADS")?.toInt() ?:
-                Runtime.getRuntime().availableProcessors()
-        outputFormats = setOf("XML", "HTML")
+        jvmArgs.set(listOf("-Xmx512m"))
+        testPlugin.set("junit5")
+        avoidCallsTo.set(setOf("kotlin.jvm.internal"))
+        mutators.set(setOf("NEW_DEFAULTS"))
+        targetClasses.set(setOf("randolf.*"))  //by default "${project.group}.*"
+        targetTests.set(setOf("randolf.*"))
+        pitestVersion.set("1.4.10")
+        threads.set(System.getenv("PITEST_THREADS")?.toInt() ?:
+                Runtime.getRuntime().availableProcessors())
+        outputFormats.set(setOf("XML", "HTML"))
     }
 }
 
