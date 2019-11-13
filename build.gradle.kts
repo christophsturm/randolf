@@ -4,12 +4,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junit5Version = "5.5.1"
 val junitPlatformVersion = "1.5.1"
-val kotlinVersion = "1.3.41"
+val kotlinVersion = "1.3.50"
 
 plugins {
     java
-    kotlin("jvm") version "1.3.41"
-    id("com.github.ben-manes.versions") version "0.21.0"
+    kotlin("jvm") version "1.3.50"
+    id("com.github.ben-manes.versions") version "0.27.0"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.4"
     id("info.solidsoft.pitest") version "1.4.0"
