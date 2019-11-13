@@ -36,8 +36,8 @@ repositories {
 }
 
 dependencies {
-    compile(kotlin("stdlib-jdk8", kotlinVersion))
-    compile(kotlin("reflect", kotlinVersion))
+    implementation(kotlin("stdlib-jdk8", kotlinVersion))
+    implementation(kotlin("reflect", kotlinVersion))
     testImplementation("io.strikt:strikt-core:0.22.2")
     testImplementation("dev.minutest:minutest:1.9.0")
 
@@ -107,7 +107,7 @@ bintray {
 
 plugins.withId("info.solidsoft.pitest") {
     configure<PitestPluginExtension> {
-        verbose.set(true)
+        //        verbose.set(true)
         jvmArgs.set(listOf("-Xmx512m"))
         testPlugin.set("junit5")
         avoidCallsTo.set(setOf("kotlin.jvm.internal"))
