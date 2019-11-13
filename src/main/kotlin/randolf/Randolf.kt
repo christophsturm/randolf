@@ -21,12 +21,16 @@ class Randolf(private val config: RandolfConfig = RandolfConfig()) {
     fun <T : Any> create(kClass: KClass<T>) = create(kClass, "root")
 
     private fun <T : Any> create(kClass: KClass<T>, propertyName: String): T {
-        if (path.contains(kClass)) throw RandolfException("Recursion detected when trying to set property $propertyName of type ${kClass.simpleName}")
-        path.add(kClass)
+        if (unfinishedClasses.contains(kClass))
+            throw RandolfException("Recursion detected when trying to set property $propertyName of type ${kClass.simpleName}")
+        unfinishedClasses.add(kClass)
+
         val constructor = kClass.constructors.singleOrNull { it.visibility == KVisibility.PUBLIC }
             ?: throw RandolfException("No public constructor found when trying to set property $propertyName of type ${kClass.simpleName}")
-        val parameters = constructor.parameters
-        val parameterValues = parameters.mapNotNull { parameter ->
+
+        // create a map to use for callBy, because callBy respects default parameters
+        val parameterValues = constructor.parameters.mapNotNull { parameter ->
+            // in minimal mode set nullable parameters to null and omit optional parameters
             if (config.minimal && parameter.type.isMarkedNullable)
                 Pair(parameter, null)
             else if (config.minimal && parameter.isOptional)
@@ -34,12 +38,14 @@ class Randolf(private val config: RandolfConfig = RandolfConfig()) {
             else
                 Pair(parameter, createValue(parameter.type, parameter.name!!))
         }.toMap()
-        path.remove(kClass)
+        unfinishedClasses.remove(kClass)
         return constructor.callBy(parameterValues)
     }
 
     private val random = config.random
-    private val path = mutableSetOf<KClass<*>>()
+
+    // keep a list of classes that we are currently working on to detect recursion
+    private val unfinishedClasses = mutableSetOf<KClass<*>>()
 
     private val valueCreators = mapOf<KClass<*>, (type: KType, name: String) -> Any>(
         Int::class to { _, _ -> random.nextInt() },
@@ -68,8 +74,7 @@ class Randolf(private val config: RandolfConfig = RandolfConfig()) {
         return if (isEnum) {
             parameterKClass.java.enumConstants.random(random)
         } else {
-            val valueCreator = valueCreators[parameterKClass]
-            valueCreator?.invoke(type, parameterName) ?: create(parameterKClass, parameterName)
+            valueCreators[parameterKClass]?.invoke(type, parameterName) ?: create(parameterKClass, parameterName)
         }
     }
 
@@ -95,7 +100,6 @@ class Randolf(private val config: RandolfConfig = RandolfConfig()) {
             }
     }
 }
-
 
 
 class RandolfException(message: String) : RuntimeException(message)
