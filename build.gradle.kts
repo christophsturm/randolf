@@ -1,6 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.jfrog.bintray.gradle.BintrayExtension
 import info.solidsoft.gradle.pitest.PitestPluginExtension
+import org.gradle.api.internal.tasks.testing.TestDescriptorInternal
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junit5Version = "5.5.2"
@@ -57,9 +58,14 @@ tasks {
         useJUnitPlatform {
             includeEngines("junit-jupiter")
         }
-        testLogging {
-            events("passed", "skipped", "failed")
-        }
+        afterTest(KotlinClosure2<TestDescriptor, TestResult, Any>({ descriptor, result ->
+            val test = descriptor as TestDescriptorInternal
+            val classDisplayName =
+                if (test.className == test.classDisplayName) test.classDisplayName else "${test.className} [${test.classDisplayName}]"
+            val testDisplayName =
+                if (test.name == test.displayName) test.displayName else "${test.name} [${test.displayName}]"
+            println("\n$classDisplayName > $testDisplayName: ${result.resultType}")
+        }))
     }
     create<Jar>("sourceJar") {
         from(sourceSets.main.get().allSource)
@@ -101,6 +107,7 @@ bintray {
 
 plugins.withId("info.solidsoft.pitest") {
     configure<PitestPluginExtension> {
+        verbose.set(true)
         jvmArgs.set(listOf("-Xmx512m"))
         testPlugin.set("junit5")
         avoidCallsTo.set(setOf("kotlin.jvm.internal"))
@@ -108,8 +115,7 @@ plugins.withId("info.solidsoft.pitest") {
         targetClasses.set(setOf("randolf.*"))  //by default "${project.group}.*"
         targetTests.set(setOf("randolf.*"))
         pitestVersion.set("1.4.10")
-        threads.set(System.getenv("PITEST_THREADS")?.toInt() ?:
-                Runtime.getRuntime().availableProcessors())
+        threads.set(System.getenv("PITEST_THREADS")?.toInt() ?: Runtime.getRuntime().availableProcessors())
         outputFormats.set(setOf("XML", "HTML"))
     }
 }
@@ -133,4 +139,5 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     outputDir = "build/dependencyUpdates"
     reportfileName = "report"
 }
+
 
