@@ -12,6 +12,7 @@ import kotlin.reflect.KType
 class RandolfTest : JUnit5Minutests {
     data class StringDC(val stringProperty: String)
 
+    @Suppress("unused")
     enum class ManyValues {
         BLAH1,
         BLAH2,
