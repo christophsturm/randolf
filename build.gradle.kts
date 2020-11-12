@@ -14,19 +14,12 @@ plugins {
     id("com.github.ben-manes.versions") version "0.36.0"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.5"
-    id("info.solidsoft.pitest") version "1.4.6"
-
+    id("info.solidsoft.pitest") version "1.5.2"
 }
 
 group = "com.christophsturm"
 version = "0.2.0"
 
-buildscript {
-    configurations.maybeCreate("pitest")
-    dependencies {
-        "pitest"("org.pitest:pitest-junit5-plugin:0.10")
-    }
-}
 
 
 repositories {
@@ -111,12 +104,11 @@ plugins.withId("info.solidsoft.pitest") {
         jvmArgs.set(listOf("-Xmx512m"))
         testPlugin.set("junit5")
         avoidCallsTo.set(setOf("kotlin.jvm.internal"))
-        mutators.set(setOf("NEW_DEFAULTS"))
         targetClasses.set(setOf("randolf.*"))  //by default "${project.group}.*"
         targetTests.set(setOf("randolf.*"))
-        pitestVersion.set("1.4.10")
         threads.set(System.getenv("PITEST_THREADS")?.toInt() ?: Runtime.getRuntime().availableProcessors())
         outputFormats.set(setOf("XML", "HTML"))
+        junit5PluginVersion.set("0.12")
     }
 }
 
