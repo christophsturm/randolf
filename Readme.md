@@ -42,14 +42,12 @@ repositories {
 }
 ```
 
-You can create any Kotlin data class like in the example above. All fields will be set to random values,
-even nullable fields.
-You can chose to set only necessary fields by calling `Randolf.create(RandolfConfig(minimal=true))` instead.
-This will set all nullable fields to null, numbers to 0 and make strings, lists and maps empty.
-For more usage examples take a look at the [unit tests](src/test/kotlin/randolf/RandolfTest.kt).
+You can create any Kotlin data class like in the example above. All fields will be set to random values, even nullable
+fields. You can choose to set only necessary fields by calling `Randolf.create(RandolfConfig(minimal=true))` instead.
+This will set all nullable fields to null, numbers to 0 and make strings, lists and maps empty. For more usage examples
+take a look at the [unit tests](src/test/kotlin/randolf/RandolfTest.kt).
 
-
-Currently supported types:
+Supported types:
 * String
 * Int
 * Long
@@ -85,8 +83,9 @@ RandolfConfig(random = Random(1234))
 ```
  
 Next steps:
-* add an optional non random mode inspired by [Fakir](https://github.com/dmcg/fakir)
-* build for Kotlin/JS and Kotlin/Native. 
+
+* add an optional non-random mode inspired by [Fakir](https://github.com/dmcg/fakir)
+* build for Kotlin/JS and Kotlin/Native.
 
 [![Download](https://api.bintray.com/packages/christophsturm/maven/randolf/images/download.svg)](https://bintray.com/christophsturm/maven/randolf/_latestVersion)
 [![CircleCI](https://circleci.com/gh/christophsturm/randolf/tree/master.svg?style=svg)](https://circleci.com/gh/christophsturm/randolf/tree/master)

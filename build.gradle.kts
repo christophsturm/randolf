@@ -4,29 +4,22 @@ import info.solidsoft.gradle.pitest.PitestPluginExtension
 import org.gradle.api.internal.tasks.testing.TestDescriptorInternal
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junit5Version = "5.5.2"
-val junitPlatformVersion = "1.5.2"
-val kotlinVersion = "1.3.61"
+val junit5Version = "5.7.0"
+val junitPlatformVersion = "1.7.0"
+val kotlinVersion = "1.4.10"
 
 plugins {
     java
-    kotlin("jvm") version "1.3.61"
-    id("com.github.ben-manes.versions") version "0.27.0"
+    kotlin("jvm") version "1.4.10"
+    id("com.github.ben-manes.versions") version "0.36.0"
     `maven-publish`
-    id("com.jfrog.bintray") version "1.8.4"
-    id("info.solidsoft.pitest") version "1.4.6"
-
+    id("com.jfrog.bintray") version "1.8.5"
+    id("info.solidsoft.pitest") version "1.5.2"
 }
 
 group = "com.christophsturm"
 version = "0.2.0"
 
-buildscript {
-    configurations.maybeCreate("pitest")
-    dependencies {
-        "pitest"("org.pitest:pitest-junit5-plugin:0.10")
-    }
-}
 
 
 repositories {
@@ -38,8 +31,8 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))
-    testImplementation("io.strikt:strikt-core:0.23.2")
-    testImplementation("dev.minutest:minutest:1.9.0")
+    testImplementation("io.strikt:strikt-core:0.28.0")
+    testImplementation("dev.minutest:minutest:1.11.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
@@ -111,12 +104,11 @@ plugins.withId("info.solidsoft.pitest") {
         jvmArgs.set(listOf("-Xmx512m"))
         testPlugin.set("junit5")
         avoidCallsTo.set(setOf("kotlin.jvm.internal"))
-        mutators.set(setOf("NEW_DEFAULTS"))
         targetClasses.set(setOf("randolf.*"))  //by default "${project.group}.*"
         targetTests.set(setOf("randolf.*"))
-        pitestVersion.set("1.4.10")
         threads.set(System.getenv("PITEST_THREADS")?.toInt() ?: Runtime.getRuntime().availableProcessors())
         outputFormats.set(setOf("XML", "HTML"))
+        junit5PluginVersion.set("0.12")
     }
 }
 

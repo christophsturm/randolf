@@ -302,11 +302,11 @@ class RandolfTest : JUnit5Minutests {
 
 
             test("outputs decent error message when there is no public constructor") {
+                class WithPrivateConstructor private constructor()
                 expectThrows<RandolfException> {
-                    @Suppress("IMPLICIT_NOTHING_AS_TYPE_PARAMETER")
-                    Randolf().create(Nothing::class)
+                    Randolf().create(WithPrivateConstructor::class)
                 }.message.isNotNull().and {
-                    contains(" Void")
+                    contains(" WithPrivateConstructor")
                     contains("No public constructor ")
 
 
