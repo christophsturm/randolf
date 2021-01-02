@@ -6,11 +6,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junit5Version = "5.7.0"
 val junitPlatformVersion = "1.7.0"
-val kotlinVersion = "1.4.10"
+val kotlinVersion = "1.4.21-2"
 
 plugins {
     java
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.21-2"
     id("com.github.ben-manes.versions") version "0.36.0"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.5"
@@ -31,7 +31,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))
-    testImplementation("io.strikt:strikt-core:0.28.0")
+    testImplementation("io.strikt:strikt-core:0.28.1")
     testImplementation("dev.minutest:minutest:1.11.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
@@ -109,6 +109,7 @@ plugins.withId("info.solidsoft.pitest") {
         threads.set(System.getenv("PITEST_THREADS")?.toInt() ?: Runtime.getRuntime().availableProcessors())
         outputFormats.set(setOf("XML", "HTML"))
         junit5PluginVersion.set("0.12")
+        pitestVersion.set("1.6.2")
     }
 }
 
