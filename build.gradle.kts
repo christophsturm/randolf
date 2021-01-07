@@ -1,6 +1,5 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import info.solidsoft.gradle.pitest.PitestPluginExtension
-import org.gradle.api.internal.tasks.testing.TestDescriptorInternal
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junit5Version = "5.7.1"
@@ -29,13 +28,8 @@ dependencies {
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))
     testImplementation("io.strikt:strikt-core:0.31.0")
-    testImplementation("dev.minutest:minutest:1.13.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
-    testImplementation("com.christophsturm:failfast:0.1.1")
-
+    testImplementation("com.christophsturm.failfast:failfast:0.4.1")
 }
 
 configure<JavaPluginConvention> {
@@ -44,19 +38,6 @@ configure<JavaPluginConvention> {
 tasks {
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
-    }
-    withType<Test> {
-        useJUnitPlatform {
-            includeEngines("junit-jupiter")
-        }
-        afterTest(KotlinClosure2<TestDescriptor, TestResult, Any>({ descriptor, result ->
-            val test = descriptor as TestDescriptorInternal
-            val classDisplayName =
-                if (test.className == test.classDisplayName) test.classDisplayName else "${test.className} [${test.classDisplayName}]"
-            val testDisplayName =
-                if (test.name == test.displayName) test.displayName else "${test.name} [${test.displayName}]"
-            println("\n$classDisplayName > $testDisplayName: ${result.resultType}")
-        }))
     }
 }
 

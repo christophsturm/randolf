@@ -52,6 +52,7 @@ object RandolfTest {
                 val favoriteCoffee: BeanType,
                 val groups: List<Group>
             )
+            Randolf().create<User>()
 //            print(Randolf().create<User>())
             // => User(firstName=QV muCLbUVfVheboeSuN, name=MSdOzpRCFIykprACOHjv, age=2116525025, lat=0.9518687079417872, lon=0.8331958938906572, isBoss=false, teamSize=4310, flags=83, shortName=Z, efficiency=0.76879007, favoriteCoffee=ARABICA, groups=[Group(name=TpiFXUrucFA cMARKLiR), Group(name=floFeNep XBEZUfXwQgL)])
         }
