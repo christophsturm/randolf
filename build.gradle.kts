@@ -34,6 +34,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
+    testImplementation("com.christophsturm:failfast:0.1.1")
 
 }
 
@@ -147,5 +148,16 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     outputDir = "build/dependencyUpdates"
     reportfileName = "report"
 }
+
+val testMain = task("testMain", JavaExec::class) {
+    main = "randolf.RandolfTestKt"
+    classpath = sourceSets["test"].runtimeClasspath
+}
+
+tasks.check {
+    dependsOn(testMain)
+}
+
+
 
 

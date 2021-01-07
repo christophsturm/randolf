@@ -1,7 +1,9 @@
+@file:Suppress("NAME_SHADOWING")
+
 package randolf
 
-import dev.minutest.junit.JUnit5Minutests
-import dev.minutest.rootContext
+import failfast.Suite
+import failfast.describe
 import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.*
@@ -9,7 +11,11 @@ import java.time.Instant
 import kotlin.random.Random
 import kotlin.reflect.KType
 
-class RandolfTest : JUnit5Minutests {
+fun main() {
+    Suite(RandolfTest.context).run().check()
+}
+
+object RandolfTest {
     data class StringDC(val stringProperty: String)
 
     @Suppress("unused")
@@ -25,10 +31,9 @@ class RandolfTest : JUnit5Minutests {
 
     enum class BeanType { ROBUSTA, ARABICA }
 
-    @Suppress("unused")
-    fun tests() = rootContext<Randolf> {
-        fixture { Randolf() }
 
+    val context = describe(Randolf::class) {
+        val randolf = Randolf()
 
         // not using the fixture in the test below to make it self contained for the readme
         test("how it looks and what it does") {
@@ -47,14 +52,14 @@ class RandolfTest : JUnit5Minutests {
                 val favoriteCoffee: BeanType,
                 val groups: List<Group>
             )
-            print(Randolf().create<User>())
+//            print(Randolf().create<User>())
             // => User(firstName=QV muCLbUVfVheboeSuN, name=MSdOzpRCFIykprACOHjv, age=2116525025, lat=0.9518687079417872, lon=0.8331958938906572, isBoss=false, teamSize=4310, flags=83, shortName=Z, efficiency=0.76879007, favoriteCoffee=ARABICA, groups=[Group(name=TpiFXUrucFA cMARKLiR), Group(name=floFeNep XBEZUfXwQgL)])
         }
 
         test("sets string properties to 20 random characters") {
-            val firstInstance = fixture.create<StringDC>()
+            val firstInstance = randolf.create<StringDC>()
             expectThat(firstInstance).get { stringProperty }.hasLength(20)
-            expectThat(firstInstance).isNotEqualTo(fixture.create())
+            expectThat(firstInstance).isNotEqualTo(randolf.create())
         }
         test("list of characters to choose from can be configured") {
             val randolf = Randolf(RandolfConfig(stringLength = 5, stringCharacters = listOf('a')))
@@ -63,27 +68,27 @@ class RandolfTest : JUnit5Minutests {
         }
         test("sets Integer properties to a random value") {
             data class IntegerDC(val integerProperty: Int)
-            expectThat(fixture.create<IntegerDC>()).isNotEqualTo(fixture.create())
+            expectThat(randolf.create<IntegerDC>()).isNotEqualTo(randolf.create())
         }
         test("sets Long properties to a random value") {
             data class LongDC(val longProperty: Long)
-            expectThat(fixture.create<LongDC>()).isNotEqualTo(fixture.create())
+            expectThat(randolf.create<LongDC>()).isNotEqualTo(randolf.create())
         }
         test("sets Double properties to a random value") {
             data class DoubleDC(val doubleProperty: Double)
-            expectThat(fixture.create<DoubleDC>()).isNotEqualTo(fixture.create())
+            expectThat(randolf.create<DoubleDC>()).isNotEqualTo(randolf.create())
         }
 
         test("sets enum properties to a random value") {
             data class EnumDC(val enumProperty: BeanType)
             // create 10 instances and check that not all of them are the same
-            expectThat((1..10).map { fixture.create<EnumDC>() }.map { it.enumProperty }).contains(
+            expectThat((1..10).map { randolf.create<EnumDC>() }.map { it.enumProperty }).contains(
                 BeanType.ROBUSTA, BeanType.ARABICA
             )
         }
         test("initializes nested data classes") {
             data class DataClassDC(val otherDataClassProperty: StringDC)
-            expectThat(fixture.create<DataClassDC>()).isNotEqualTo(fixture.create())
+            expectThat(randolf.create<DataClassDC>()).isNotEqualTo(randolf.create())
         }
         data class NullableFieldsDC(
             val string: String?, val int: Int?, val long: Long?, val double: Double?, val enum: ManyValues?,
@@ -91,7 +96,7 @@ class RandolfTest : JUnit5Minutests {
         )
 
         test("also sets nullable fields") {
-            expectThat(fixture.create<NullableFieldsDC>()) {
+            expectThat(randolf.create<NullableFieldsDC>()) {
                 get { string }.isNotNull()
                 get { int }.isNotNull()
                 get { long }.isNotNull()
@@ -106,7 +111,7 @@ class RandolfTest : JUnit5Minutests {
         }
         test("does not use default values per default") {
             data class StringWithDefaultDC(val stringProperty: String = "unused default")
-            expectThat(fixture.create<StringWithDefaultDC>()).get { stringProperty }.isNotEqualTo("unused default")
+            expectThat(randolf.create<StringWithDefaultDC>()).get { stringProperty }.isNotEqualTo("unused default")
         }
         context("collections support") {
             data class ListDC(
@@ -114,10 +119,10 @@ class RandolfTest : JUnit5Minutests {
                 val doubles: List<Double>, val enums: List<BeanType>
             )
             test("sets lists of supported  values") {
-                expectThat(fixture.create<ListDC>()).isNotEqualTo(fixture.create())
+                expectThat(randolf.create<ListDC>()).isNotEqualTo(randolf.create())
             }
             test("lists have 1 to 10 entries per default") {
-                expectThat((0..10).map { fixture.create<ListDC>() }).all {
+                expectThat((0..10).map { randolf.create<ListDC>() }).all {
                     get { strings }.isNotEmpty().size.isLessThan(11)
                     get { ints }.isNotEmpty().size.isLessThan(11)
                     get { longs }.isNotEmpty().size.isLessThan(11)
@@ -141,10 +146,10 @@ class RandolfTest : JUnit5Minutests {
                 val doubles: Set<Double>, val enums: Set<ManyValues>
             )
             test("sets sets of supported values") {
-                expectThat(fixture.create<SetDC>()).isNotEqualTo(fixture.create())
+                expectThat(randolf.create<SetDC>()).isNotEqualTo(randolf.create())
             }
             test("sets have 1 to 10 entries") {
-                expectThat((0..10).map { fixture.create<SetDC>() }).all {
+                expectThat((0..10).map { randolf.create<SetDC>() }).all {
                     get { strings }.isNotEmpty().size.isLessThan(11)
                     get { ints }.isNotEmpty().size.isLessThan(11)
                     get { longs }.isNotEmpty().size.isLessThan(11)
@@ -159,10 +164,10 @@ class RandolfTest : JUnit5Minutests {
             )
 
             test("sets lists of supported values") {
-                expectThat(fixture.create<CollectionDC>()).isNotEqualTo(fixture.create())
+                expectThat(randolf.create<CollectionDC>()).isNotEqualTo(randolf.create())
             }
             test("lists have 1 to 10 entries") {
-                expectThat((0..10).map { fixture.create<CollectionDC>() }).all {
+                expectThat((0..10).map { randolf.create<CollectionDC>() }).all {
                     get { strings }.isNotEmpty().size.isLessThan(11)
                     get { ints }.isNotEmpty().size.isLessThan(11)
                     get { longs }.isNotEmpty().size.isLessThan(11)
@@ -175,10 +180,10 @@ class RandolfTest : JUnit5Minutests {
                 val int2StringMap: Map<Int, String>
             )
             test("sets maps of supported values") {
-                expectThat(fixture.create<MapDC>()).isNotEqualTo(fixture.create())
+                expectThat(randolf.create<MapDC>()).isNotEqualTo(randolf.create())
             }
             test("maps have 1 to 10 entries") {
-                expectThat((0..10).map { fixture.create<MapDC>() }).all {
+                expectThat((0..10).map { randolf.create<MapDC>() }).all {
                     get { int2StringMap.entries }.isNotEmpty().size.isLessThan(11)
                 }
             }
@@ -231,10 +236,10 @@ class RandolfTest : JUnit5Minutests {
             }
         }
         context("minimal mode") {
-            fixture { Randolf(RandolfConfig(minimal = true)) }
+            val minimalRandolf = Randolf(RandolfConfig(minimal = true))
 
             test("sets nullable properties to null") {
-                expectThat(fixture.create<NullableFieldsDC>()) {
+                expectThat(minimalRandolf.create<NullableFieldsDC>()) {
                     get { string }.isNull()
                     get { int }.isNull()
                     get { long }.isNull()
@@ -250,11 +255,11 @@ class RandolfTest : JUnit5Minutests {
 
             test("sets string properties to empty string") {
                 data class StringDC(val a: String)
-                expectThat(fixture.create<StringDC>()).get { a }.isEmpty()
+                expectThat(minimalRandolf.create<StringDC>()).get { a }.isEmpty()
             }
             test("sets list properties to empty list") {
                 data class ListDC(val list: List<String>, val set: Set<String>, val collection: Collection<String>)
-                expectThat(fixture.create<ListDC>()) {
+                expectThat(minimalRandolf.create<ListDC>()) {
                     get { list }.isEmpty()
                     get { set }.isEmpty()
                     get { collection }.isEmpty()
@@ -262,13 +267,13 @@ class RandolfTest : JUnit5Minutests {
             }
             test("sets map properties to empty maps") {
                 data class MapDC(val map: Map<String, String>)
-                expectThat(fixture.create<MapDC>()) {
+                expectThat(minimalRandolf.create<MapDC>()) {
                     get { map }.isEmpty()
                 }
             }
             test("sets not nullable properties to their default value") {
                 data class StringDC(val string: String = "string theory", val int: Int = 42)
-                expectThat(fixture.create<StringDC>()) {
+                expectThat(minimalRandolf.create<StringDC>()) {
                     get { string }.isEqualTo("string theory")
                     get { int }.isEqualTo(42)
                 }
@@ -290,7 +295,7 @@ class RandolfTest : JUnit5Minutests {
                 @Suppress("SelfReferenceConstructorParameter")
                 data class DataClassThatReferencesItself(val recursiveField: DataClassThatReferencesItself)
                 expectThrows<RandolfException> {
-                    fixture.create<DataClassThatReferencesItself>()
+                    randolf.create<DataClassThatReferencesItself>()
                 }.get { message }.isNotNull().and {
                     contains("Recursion ")
                     contains("detected ")
@@ -315,5 +320,6 @@ class RandolfTest : JUnit5Minutests {
         }
     }
 }
+
 
 
