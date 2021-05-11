@@ -99,7 +99,7 @@ plugins.withId("info.solidsoft.pitest") {
     configure<PitestPluginExtension> {
         //        verbose.set(true)
         jvmArgs.set(listOf("-Xmx512m"))
-        testPlugin.set("junit5")
+        testPlugin.set("failfast")
         avoidCallsTo.set(setOf("kotlin.jvm.internal"))
         targetClasses.set(setOf("randolf.*"))  //by default "${project.group}.*"
         targetTests.set(setOf("randolf.*"))
