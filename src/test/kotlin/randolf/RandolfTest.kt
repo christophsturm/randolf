@@ -2,8 +2,9 @@
 
 package randolf
 
-import failfast.Suite
-import failfast.describe
+import failgood.Test
+import failgood.describe
+import kotlinx.serialization.Serializable
 import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.*
@@ -11,11 +12,11 @@ import java.time.Instant
 import kotlin.random.Random
 import kotlin.reflect.KType
 
-fun main() {
-    Suite(RandolfTest.context).run().check()
-}
+@Serializable
+data class SerializableClass(val property: String)
 
-object RandolfTest {
+@Test
+class RandolfTest {
     data class StringDC(val stringProperty: String)
 
     @Suppress("unused")
@@ -284,7 +285,7 @@ object RandolfTest {
         }
         context("constructor selection") {
             test("uses the public constructor") {
-                class DataClassWithPrivatePrimaryConstructor private constructor(val string: String) {
+                class DataClassWithPrivatePrimaryConstructor private constructor(@Suppress("unused") val string: String) {
                     @Suppress("unused")
                     constructor(int: Int) : this(int.toString())
                 }
@@ -317,6 +318,11 @@ object RandolfTest {
 
 
                 }
+            }
+        }
+        describe("kotlinx.serialization") {
+            it("is also supported") {
+                randolf.create(SerializableClass::class)
             }
         }
     }

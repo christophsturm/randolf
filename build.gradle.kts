@@ -3,20 +3,20 @@ import info.solidsoft.gradle.pitest.PitestPluginExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junit5Version = "5.7.1"
-val junitPlatformVersion = "1.7.1"
 val kotlinVersion = "1.5.0"
 
 plugins {
     java
-    kotlin("jvm") version "1.5.0"
-    id("com.github.ben-manes.versions") version "0.36.0"
+    kotlin("jvm") version "1.5.32"
+    kotlin("plugin.serialization") version "1.5.32"
+    id("com.github.ben-manes.versions") version "0.39.0"
     `maven-publish`
-    id("info.solidsoft.pitest") version "1.6.0"
+    id("info.solidsoft.pitest") version "1.7.0"
     signing
 }
 
 group = "com.christophsturm"
-version = "0.2.1"
+version = "0.2.2"
 
 
 
@@ -27,15 +27,21 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))
-    testImplementation("io.strikt:strikt-core:0.31.0")
+    testImplementation("io.strikt:strikt-core:0.33.0")
 
-    testImplementation("com.christophsturm.failfast:failfast:0.4.1")
+    testImplementation("dev.failgood:failgood:0.5.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.1")
 }
 
-configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-}
 tasks {
+    withType<JavaCompile> {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+    }
+
+    withType<Test> {
+        useJUnitPlatform()
+    }
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
     }
@@ -99,7 +105,7 @@ plugins.withId("info.solidsoft.pitest") {
     configure<PitestPluginExtension> {
         //        verbose.set(true)
         jvmArgs.set(listOf("-Xmx512m"))
-        testPlugin.set("failfast")
+        testPlugin.set("failgood")
         avoidCallsTo.set(setOf("kotlin.jvm.internal"))
         targetClasses.set(setOf("randolf.*"))  //by default "${project.group}.*"
         targetTests.set(setOf("randolf.*"))
@@ -130,14 +136,7 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     reportfileName = "report"
 }
 
-val testMain = task("testMain", JavaExec::class) {
-    main = "randolf.RandolfTestKt"
-    classpath = sourceSets["test"].runtimeClasspath
-}
 
-tasks.check {
-    dependsOn(testMain)
-}
 
 
 

@@ -2,8 +2,10 @@ package randolf
 
 import java.util.*
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 import kotlin.reflect.KType
 import kotlin.reflect.KVisibility
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.javaType
 
 
@@ -25,8 +27,9 @@ class Randolf(private val config: RandolfConfig = RandolfConfig()) {
             throw RandolfException("Recursion detected when trying to set property $propertyName of type ${kClass.simpleName}")
         unfinishedClasses.add(kClass)
 
-        val constructor = kClass.constructors.singleOrNull { it.visibility == KVisibility.PUBLIC }
-            ?: throw RandolfException("No public constructor found when trying to set property $propertyName of type ${kClass.simpleName}")
+        val constructors = kClass.constructors
+        val constructor: KFunction<T> = constructors.singleOrNull { it.visibility == KVisibility.PUBLIC }
+            ?: kClass.primaryConstructor.let { if (it?.visibility == KVisibility.PUBLIC) it else null } ?: throw RandolfException("No public constructor found when trying to set property $propertyName of type ${kClass.simpleName}")
 
         // create a map to use for callBy, because callBy respects default parameters
         val parameterValues = constructor.parameters.mapNotNull { parameter ->
