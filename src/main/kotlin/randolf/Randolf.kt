@@ -1,5 +1,9 @@
 package randolf
 
+import java.math.BigDecimal
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -29,7 +33,8 @@ class Randolf(private val config: RandolfConfig = RandolfConfig()) {
 
         val constructors = kClass.constructors
         val constructor: KFunction<T> = constructors.singleOrNull { it.visibility == KVisibility.PUBLIC }
-            ?: kClass.primaryConstructor.let { if (it?.visibility == KVisibility.PUBLIC) it else null } ?: throw RandolfException("No public constructor found when trying to set property $propertyName of type ${kClass.simpleName}")
+            ?: kClass.primaryConstructor.let { if (it?.visibility == KVisibility.PUBLIC) it else null }
+            ?: throw RandolfException("No public constructor found when trying to set property $propertyName of type ${kClass.simpleName}")
 
         // create a map to use for callBy, because callBy respects default parameters
         val parameterValues = constructor.parameters.mapNotNull { parameter ->
@@ -60,14 +65,20 @@ class Randolf(private val config: RandolfConfig = RandolfConfig()) {
         Boolean::class to { _, _ -> random.nextBoolean() },
         Char::class to { _, _ -> config.stringCharacters.random(random) },
         String::class to { _, _ ->
-            if (config.minimal) "" else (1..config.stringLength).map { config.stringCharacters.random(random) }.joinToString(
-                ""
-            )
+            if (config.minimal) "" else (1..config.stringLength).map { config.stringCharacters.random(random) }
+                .joinToString(
+                    ""
+                )
         },
         Map::class to { type, name -> makeMap(type, name) },
         List::class to { type, name -> makeList(type, name) },
         Set::class to { type, name -> makeList(type, name).toSet() },
-        Collection::class to { type, name -> makeList(type, name) }
+        Collection::class to { type, name -> makeList(type, name) },
+        OffsetDateTime::class to { _, _ ->
+            Instant.ofEpochSecond(random.nextLong(31556889864403199L)).atZone(ZoneId.of(ZoneId.getAvailableZoneIds().random(random)))
+        },
+        BigDecimal::class to {_,_-> BigDecimal(random.nextLong())}
+
     ).plus(config.additionalValueCreators)
 
 
