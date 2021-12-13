@@ -3,7 +3,7 @@ import info.solidsoft.gradle.pitest.PitestPluginExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junit5Version = "5.7.1"
-val kotlinVersion = "1.5.0"
+val kotlinVersion = "1.5.32"
 
 plugins {
     java
