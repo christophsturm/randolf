@@ -14,10 +14,23 @@ import kotlin.reflect.jvm.javaType
 
 
 /**
- * reified shortcut for the Randolf.create method
+ * reified shortcut for the `Randolf.create` method
  * @see Randolf.create
  */
 inline fun <reified T : Any> Randolf.create(): T = this.create(T::class)
+
+fun randolf(builder : RandolfConfigDSL.()->Unit): Randolf {
+    return Randolf(RandolfConfigBuilder().apply {builder()}.config())
+}
+
+
+class RandolfConfigBuilder: RandolfConfigDSL {
+    fun config(): RandolfConfig {
+        return RandolfConfig()
+    }
+}
+
+interface RandolfConfigDSL
 
 class Randolf(private val config: RandolfConfig = RandolfConfig()) {
 
@@ -47,7 +60,11 @@ class Randolf(private val config: RandolfConfig = RandolfConfig()) {
                 Pair(parameter, createValue(parameter.type, parameter.name!!))
         }.toMap()
         unfinishedClasses.remove(kClass)
-        return constructor.callBy(parameterValues)
+        return try {
+            constructor.callBy(parameterValues)
+        } catch (e: IllegalArgumentException) {
+            throw RandolfException("Error calling constructor when building $propertyName of type ${kClass.simpleName}",e)
+        }
     }
 
     private val random = config.random
@@ -116,4 +133,7 @@ class Randolf(private val config: RandolfConfig = RandolfConfig()) {
 }
 
 
-class RandolfException(message: String) : RuntimeException(message)
+class RandolfException : RuntimeException {
+    constructor(message: String) : super(message)
+    constructor(message: String, throwable: Throwable) : super(message, throwable)
+}
