@@ -8,7 +8,6 @@ import kotlinx.serialization.Serializable
 import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.*
-import java.time.Instant
 import kotlin.random.Random
 import kotlin.reflect.KType
 
@@ -21,13 +20,7 @@ class RandolfTest {
 
     @Suppress("unused")
     enum class ManyValues {
-        BLAH1,
-        BLAH2,
-        BLAH3,
-        BLAH4,
-        BLAH5,
-        BLAH6,
-        BLAH7,
+        BLAH1, BLAH2, BLAH3, BLAH4, BLAH5, BLAH6, BLAH7,
     }
 
     enum class BeanType { ROBUSTA, ARABICA }
@@ -93,8 +86,16 @@ class RandolfTest {
             expectThat(randolf.create<DataClassDC>()).isNotEqualTo(randolf.create())
         }
         data class NullableFieldsDC(
-            val string: String?, val int: Int?, val long: Long?, val double: Double?, val enum: ManyValues?,
-            val byte: Byte?, val float: Float?, val short: Short?, val boolean: Boolean?, val char: Char?
+            val string: String?,
+            val int: Int?,
+            val long: Long?,
+            val double: Double?,
+            val enum: ManyValues?,
+            val byte: Byte?,
+            val float: Float?,
+            val short: Short?,
+            val boolean: Boolean?,
+            val char: Char?
         )
 
         test("also sets nullable fields") {
@@ -117,8 +118,11 @@ class RandolfTest {
         }
         context("collections support") {
             data class ListDC(
-                val strings: List<String>, val ints: List<Int>, val longs: List<Long>,
-                val doubles: List<Double>, val enums: List<BeanType>
+                val strings: List<String>,
+                val ints: List<Int>,
+                val longs: List<Long>,
+                val doubles: List<Double>,
+                val enums: List<BeanType>
             )
             test("sets lists of supported  values") {
                 expectThat(randolf.create<ListDC>()).isNotEqualTo(randolf.create())
@@ -144,8 +148,11 @@ class RandolfTest {
             }
 
             data class SetDC(
-                val strings: Set<String>, val ints: Set<Int>, val longs: Set<Long>,
-                val doubles: Set<Double>, val enums: Set<ManyValues>
+                val strings: Set<String>,
+                val ints: Set<Int>,
+                val longs: Set<Long>,
+                val doubles: Set<Double>,
+                val enums: Set<ManyValues>
             )
             test("sets sets of supported values") {
                 expectThat(randolf.create<SetDC>()).isNotEqualTo(randolf.create())
@@ -161,8 +168,11 @@ class RandolfTest {
             }
 
             data class CollectionDC(
-                val strings: Collection<String>, val ints: Collection<Int>, val longs: Collection<Long>,
-                val doubles: Collection<Double>, val enums: Collection<BeanType>
+                val strings: Collection<String>,
+                val ints: Collection<Int>,
+                val longs: Collection<Long>,
+                val doubles: Collection<Double>,
+                val enums: Collection<BeanType>
             )
 
             test("sets lists of supported values") {
@@ -190,14 +200,23 @@ class RandolfTest {
                 }
             }
         }
-        context("custom types") {
-            data class DataClassWithInstant(val instant: Instant)
-            test("supports additional value creators for custom types") {
-                val now = Instant.now()
-                val config = RandolfConfig(additionalValueCreators = mapOf(Instant::class to { _, _ ->
-                    now
+        describe("custom types") {
+            it("supports additional value creators for custom types") {
+                data class MyOtherDataClass(val name: String)
+                data class MyDataClass(val other: MyOtherDataClass)
+
+                val config = RandolfConfig(additionalValueCreators = mapOf(MyOtherDataClass::class to { _, _ ->
+                    MyOtherDataClass("blah")
                 }))
-                expectThat(Randolf(config).create<DataClassWithInstant>()).get { instant }.isEqualTo(now)
+                expectThat(Randolf(config).create<MyDataClass>()).get { other }.isEqualTo(MyOtherDataClass("blah"))
+            }
+            pending("supports additional value creators for custom types as root element") {
+                data class MyDataClass(val name: String)
+
+                val config = RandolfConfig(additionalValueCreators = mapOf(MyDataClass::class to { _, _ ->
+                    MyDataClass("blah")
+                }))
+                expectThat(Randolf(config).create<MyDataClass>()).isEqualTo(MyDataClass("blah"))
             }
             test("can override creators for internal types") {
                 val config =
