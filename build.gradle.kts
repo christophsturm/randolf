@@ -3,16 +3,17 @@ import info.solidsoft.gradle.pitest.PitestPluginExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junit5Version = "5.7.1"
-val kotlinVersion = "1.5.32"
+val kotlinVersion = "1.6.10"
 
 plugins {
     java
-    kotlin("jvm") version "1.5.32"
-    kotlin("plugin.serialization") version "1.5.32"
+    kotlin("jvm") version "1.6.10"
+    kotlin("plugin.serialization") version "1.6.10"
     id("com.github.ben-manes.versions") version "0.39.0"
     `maven-publish`
     id("info.solidsoft.pitest") version "1.7.0"
     signing
+    id("org.jetbrains.kotlinx.kover") version "0.4.4"
 }
 
 group = "com.christophsturm"
