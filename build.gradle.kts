@@ -137,8 +137,11 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     reportfileName = "report"
 }
 
-
-
-
-
+kover {
+    isEnabled = true                        // false to disable instrumentation of all test tasks in all modules
+    coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
+//sa    intellijEngineVersion.set("1.0.637")    // change version of IntelliJ agent and reporter
+//    jacocoEngineVersion.set("0.8.7")        // change version of JaCoCo agent and reporter
+//    generateReportOnCheck.set(true)         // false to do not execute `koverReport` task before `check` task
+}
 
